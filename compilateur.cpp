@@ -47,6 +47,8 @@ struct node{
 vector<char> separators;
 vector<string> symbols;
 vector<string> lexicalUnits;
+vector<string> lexicalErrors;
+vector<int> actions;
 
 node* genConc(node* left, node* right){
 	node* n = new node();
@@ -155,129 +157,6 @@ void printTree(node* n){
 	printTreeRec(n, 0);
 }
 
-bool isSeparator(char charac){
-
-	if (charac == ' ' || charac == '	' || charac == '\n'){
-		return true;
-	}
-
-	return false;
-}
-
-bool isSymbol(char charac){
-
-	if (charac == '+' || charac == '-' || charac == '=' || charac == '*' || charac == '&' || charac == '|' || charac == '/' || 
-		charac == '^' || charac == '(' || charac == ')' || charac == '[' || charac == ']' || charac == '{' || charac == '}' ||
-		charac == '#' || charac == ';' || charac == ':' || charac == ',' || charac == '<' || charac == '>' || charac == '\"'||
-		charac == '\''|| charac == '@' || charac == '!' || charac == '?'){
-		
-		return true;
-	}
-
-	return false;
-}
-
-bool isPotentialySymbolDouble(char charac){
-	if (charac == '=' || charac == '|' || charac == '&'  || charac == '<' || charac == '>' || charac == ':' || charac == '+' ||
-		charac == '-' || charac == '!'){
-		return true;
-	}
-
-	return false;
-}
-
-bool isSymbolDouble(char firstChar, char secondChar){
-	switch(firstChar){
-		case '=':
-			return(secondChar == '=');
-		break;
-		case '|':
-			return(secondChar == '|');
-		break;
-		case '&':
-			return (secondChar == '&');
-		break;
-		case '<':
-			return(secondChar == '<' || secondChar == '=');
-		break;
-		case '>':
-			return(secondChar == '>' || secondChar == '=');
-		break;
-		case ':':
-			return(secondChar == ':');
-		break;
-		case '+':
-			return(secondChar == '+' || secondChar == '=');
-		break;
-		case '-':
-			return(secondChar == '-' || secondChar == '=');
-		break;
-		case '!':
-			return(secondChar == '=');
-		break;
-	}
-
-	return false;
-}
-
-void scanner(string text){
-
-	unsigned int i;
-
-	string unit = "";
-	char currentChar;
-	string doubleSymbol;
-
-	for(i = 0 ; i < text.size() ; ++i){
-		currentChar = text.at(i);
-		if(isSymbol(currentChar) || isSeparator(currentChar)){
-			if (unit != "") {
-				lexicalUnits.push_back(unit);
-			}
-			unit = "";
-
-			if (isPotentialySymbolDouble(currentChar) && (i != text.size()-1)){
-				if (isSymbolDouble(currentChar, text.at(i+1))){
-					doubleSymbol = currentChar;
-					doubleSymbol += text.at(i+1);
-					symbols.push_back(doubleSymbol);
-					i++;
-				}
-			}else if (isSymbol(currentChar)){
-				symbols.push_back(string(1,currentChar)); // Cast Char to String
-
-			}else if (isSeparator(currentChar)){
-				separators.push_back(currentChar);
-			}
-		}else{
-			unit += currentChar;
-		}
-	}
-	// Add the last unit found
-	lexicalUnits.push_back(unit);
-}
-
-void printLexicalUnits(){
-	cout << "List of lexical units :" << endl;
-	for (int i = 0; i < lexicalUnits.size(); ++i){
-		cout << lexicalUnits[i] << endl;
-	}
-}
-
-void printSeparators(){
-	cout << "List of separators :" << endl;
-	for (int i = 0; i < separators.size(); ++i){
-		cout << i+1 << ")" << separators[i] << endl;
-	}
-}
-
-void printSymbols(){
-	cout << "List of symbols :" << endl;
-	for (int i = 0; i < symbols.size(); ++i){
-		cout << symbols[i] << endl;
-	}
-}
-
 void printForest(){
 
 	cout << "++++++++++ A1 +++++++++"<< endl;
@@ -320,13 +199,181 @@ void printForest(){
 	printTree(A5);
 }
 
+bool isSeparator(char charac){
+
+	if (charac == ' ' || charac == '	' || charac == '\n'){
+		return true;
+	}
+
+	return false;
+}
+
+bool isSymbol(char charac){
+
+	if (charac == '+' || charac == '-' || charac == '=' || charac == '*' || charac == '&' || charac == '|' || charac == '/' || 
+		charac == '^' || charac == '(' || charac == ')' || charac == '[' || charac == ']' || charac == '{' || charac == '}' ||
+		charac == ';' || charac == ':' || charac == ',' || charac == '<' || charac == '>' || charac == '\"'||
+		charac == '\''|| charac == '@' || charac == '!' || charac == '?'){
+			
+			return true;
+	}
+
+	return false;
+}
+
+bool isPotentialySymbolDouble(char charac){
+	if (charac == '=' || charac == '|' || charac == '&' || charac == '<' || charac == '>' || charac == ':' || charac == '+' ||
+		charac == '-' || charac == '!'){
+		return true;
+	}
+
+	return false;
+}
+
+bool isSymbolDouble(char firstChar, char secondChar){
+	switch(firstChar){
+		case '=':
+			return(secondChar == '=');
+		break;
+		case '|':
+			return(secondChar == '|');
+		break;
+		case '&':
+			return (secondChar == '&');
+		break;
+		case '<':
+			return(secondChar == '<' || secondChar == '=');
+		break;
+		case '>':
+			return(secondChar == '>' || secondChar == '=');
+		break;
+		case ':':
+			return(secondChar == ':');
+		break;
+		case '+':
+			return(secondChar == '+' || secondChar == '=');
+		break;
+		case '-':
+			return(secondChar == '-' || secondChar == '=' || secondChar == '>');
+		break;
+		case '!':
+			return(secondChar == '=');
+		break;
+	}
+
+	return false;
+}
+
+bool isInteger(char charac){
+	if (charac == '0' || charac == '1' || charac == '2' || charac == '3' || charac == '4' || charac == '5' || 
+		charac == '6' || charac == '7' || charac == '8' || charac == '9'){
+		return true;
+	}
+
+	return false;
+}
+
+bool isNumber(string unit){
+
+	for (int i = 0; i < unit.size(); ++i){
+		if (!isInteger(unit.at(i))){
+			return false;
+		}
+	}
+
+	return true;
+}
+
+void scanner(string text){
+
+	unsigned int i;
+
+	string unit = "";
+	char currentChar;
+	string doubleSymbol;
+
+	for(i = 0 ; i < text.size() ; ++i){
+		currentChar = text.at(i);
+		if(isSymbol(currentChar) || isSeparator(currentChar)){
+			if (unit != "") {
+				if (!isInteger(unit.at(0))){
+					lexicalUnits.push_back(unit);
+				}else if(isNumber(unit)){
+					lexicalUnits.push_back(unit);
+				}else{
+					lexicalErrors.push_back(unit);
+				}
+			}
+			unit = "";
+
+			if (isPotentialySymbolDouble(currentChar) && (i != text.size()-1)){
+				if (isSymbolDouble(currentChar, text.at(i+1))){
+					doubleSymbol = currentChar;
+					doubleSymbol += text.at(i+1);
+					symbols.push_back(doubleSymbol);
+					++i;
+				}else{
+					symbols.push_back(string(1,currentChar)); // Cast Char to String				}
+				}
+			}else if (isSymbol(currentChar)){
+				symbols.push_back(string(1,currentChar)); // Cast Char to String
+
+			}else if (isSeparator(currentChar)){
+				separators.push_back(currentChar);
+			} // TO DO -> Gérer les actions
+		}else{
+			unit += currentChar;
+		}
+	}
+	// Add the last unit found
+	lexicalUnits.push_back(unit);
+}
+
+void printLexicalUnits(){
+	cout << "List of lexical units :" << endl;
+	for (int i = 0; i < lexicalUnits.size(); ++i){
+		cout << lexicalUnits[i] << endl;
+	}
+}
+
+void printSeparators(){
+	cout << "List of separators :" << endl;
+	for (int i = 0; i < separators.size(); ++i){
+		cout << i+1 << separators[i] << endl;
+	}
+}
+
+void printSymbols(){
+	cout << "List of symbols :" << endl;
+	for (int i = 0; i < symbols.size(); ++i){
+		cout << symbols[i] << endl;
+	}
+}
+
+void printLexicalErrors(){
+	cout << "List of lexical errors :" << endl;
+	for (int i = 0; i < lexicalErrors.size(); ++i){
+		cout << lexicalErrors[i] << endl;
+	}
+}
+
+void printActions(){
+	cout << "List of actions :" << endl;
+	for (int i = 0; i < actions.size(); ++i){
+		cout << actions[i] << endl;
+	}
+}
+
 int main(){
 
-	scanner("coucou poney+++++++&&loul"); // TO DO Check le resultat
+	printForest();
+
+	scanner("1coucou rioe54erer 654654 poney=<==++++&&&loul");
 
 	printLexicalUnits();
 	printSymbols();
 	printSeparators();
+	printLexicalErrors();
 
 	return 0;
 }
