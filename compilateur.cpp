@@ -278,46 +278,49 @@ void printSymbols(){
 	}
 }
 
-int main(){
+void printForest(){
 
-	// cout << "++++++++++ A1 +++++++++"<< endl;
+	cout << "++++++++++ A1 +++++++++"<< endl;
 
-	// node* A1 = genConc( genStar( genConc(
-	//  genConc( genConc( genAtom("N", 0, NonTerminal),
-	//   genAtom("fleche", 0, Terminal)), genAtom("E",0,NonTerminal)),
-	//    genAtom(";",1,Terminal))), genAtom(";",0,Terminal) ) ;
+	node* A1 = genConc( genStar( genConc(
+	 genConc( genConc( genAtom("N", 0, NonTerminal),
+	  genAtom("fleche", 0, Terminal)), genAtom("E",0,NonTerminal)),
+	   genAtom(";",1,Terminal))), genAtom(";",0,Terminal) ) ;
 
-	// printTree(A1);
+	printTree(A1);
 
-	// cout << "++++++++++ A2 +++++++++"<< endl;
+	cout << "++++++++++ A2 +++++++++"<< endl;
 
-	// node* A2 = genAtom("IDNTER", 0, NonTerminal);
+	node* A2 = genAtom("IDNTER", 0, NonTerminal);
  
-	// printTree(A2);
+	printTree(A2);
 
-	// cout << "++++++++++ A3 +++++++++"<< endl;
+	cout << "++++++++++ A3 +++++++++"<< endl;
 
-	// node* A3 = genConc ( genStar( genConc ( genAtom("+",0,Terminal), genAtom("T", 0, NonTerminal))), genAtom("T",0,NonTerminal) );
+	node* A3 = genConc ( genStar( genConc ( genAtom("+",0,Terminal), genAtom("T", 0, NonTerminal))), genAtom("T",0,NonTerminal) );
 
-	// printTree(A3);
+	printTree(A3);
 
-	// cout << "++++++++++ A4 +++++++++"<< endl;
+	cout << "++++++++++ A4 +++++++++"<< endl;
 
-	// node* A4 = genConc ( genStar( genConc ( genAtom("F",0,NonTerminal), genAtom(".", 0, NonTerminal))), genAtom("F",0,NonTerminal) );
+	node* A4 = genConc ( genStar( genConc ( genAtom("F",0,NonTerminal), genAtom(".", 0, NonTerminal))), genAtom("F",0,NonTerminal) );
 
-	// printTree(A4);
+	printTree(A4);
 
-	// cout << "++++++++++ A5 +++++++++"<< endl;
+	cout << "++++++++++ A5 +++++++++"<< endl;
 
-	// node* A5 = genUnion( genUnion( genUnion( genUnion( genConc( genConc( 
-	// 				genAtom("(/",0,Terminal),genAtom("E",0,NonTerminal) ),
-	// 					genAtom( "/)",0,Terminal)),
-	// 						genConc( genConc( genAtom( "[",0,Terminal ), genAtom( "E",0,NonTerminal )),
-	// 								genAtom( "]",0,Terminal )) ), 
-	// 						genConc( genConc( genAtom( "(",0,Terminal ), genAtom( "E",0,NonTerminal )),
-	// 								genAtom( ")",0,Terminal )) ), genAtom( "ELTER",0,Terminal)) , genAtom( "IDNTER",0,Terminal));
+	node* A5 = genUnion( genUnion( genUnion( genUnion( genConc( genConc( 
+					genAtom("(/",0,Terminal),genAtom("E",0,NonTerminal) ),
+						genAtom( "/)",0,Terminal)),
+							genConc( genConc( genAtom( "[",0,Terminal ), genAtom( "E",0,NonTerminal )),
+									genAtom( "]",0,Terminal )) ), 
+							genConc( genConc( genAtom( "(",0,Terminal ), genAtom( "E",0,NonTerminal )),
+									genAtom( ")",0,Terminal )) ), genAtom( "ELTER",0,Terminal)) , genAtom( "IDNTER",0,Terminal));
 
-	// printTree(A5);
+	printTree(A5);
+}
+
+int main(){
 
 	scanner("coucou poney+++++++&&loul"); // TO DO Check le resultat
 
