@@ -58,6 +58,9 @@ vector<string> symbols;
 vector<string> lexicalErrors;
 vector<lexical_unit> lexicalUnits;
 
+vector<lexical_unit> lexicalTerminal;
+vector<lexical_unit> lexicalNonTerminal;
+
 node* genConc(node* left, node* right){
 	node* n = new node();
 
@@ -292,6 +295,17 @@ bool isNumber(string unit){
 	return true;
 }
 
+bool isString(string unit){
+
+	if (unit != ""){
+		if(unit.at(0) == '\"' && unit.at(unit.size()-1 == '\"')){
+			return true;
+		}
+	}
+
+	return false;
+}
+
 int actionOfLexicalUnit(string unit){
 
 	string action;
@@ -334,6 +348,12 @@ void addLexicalUnit(string chaine, int action, AtomType type, Code code){
 	currentLexical.code = code;
 
 	lexicalUnits.push_back(currentLexical);
+
+	if(type == Terminal){
+		lexicalTerminal.push_back(currentLexical);
+	}else{
+		lexicalNonTerminal.push_back(currentLexical);
+	}
 }
 
 void analyseUnit(string unit){
@@ -341,26 +361,27 @@ void analyseUnit(string unit){
 	int action;
 
 	if (unit != "") {
+		if(!isInteger(unit.at(0))){
+			action = actionOfLexicalUnit(unit);
+			// find the action of a string if there is one (-2 for an error, -1 for a unit without code and the code otherwise)
 
-	if(!isInteger(unit.at(0))){
-
-		// find the action of a string if there is one (-2 for an error, -1 for a unit without code and the code otherwise)
-		action = actionOfLexicalUnit(unit);
-
-		if (action == -1){
-			addLexicalUnit(unit, action, NonTerminal, IDNTER);
-		}else if (action == -2){
-			lexicalErrors.push_back(unit);
+			if (action == -1){
+				if(isString(unit)){
+					addLexicalUnit(unit, action, Terminal, ELTER);
+				}else{
+					addLexicalUnit(unit, action, NonTerminal, IDNTER);
+				}
+			}else if (action == -2){
+				lexicalErrors.push_back(unit);
+			}else{
+				addLexicalUnit(rmActionFromLexicalUnit(unit), action, NonTerminal, IDNTER);
+			}
+		}else if(isNumber(unit)){
+			addLexicalUnit(unit, -1, Terminal, ELTER);
 		}else{
-			addLexicalUnit(rmActionFromLexicalUnit(unit), action, NonTerminal, IDNTER);
+			lexicalErrors.push_back(unit);
 		}
-
-	}else if(isNumber(unit)){
-		addLexicalUnit(unit, -1, Terminal, ELTER);
-	}else{
-		lexicalErrors.push_back(unit);
 	}
-}
 }
 
 // previous version of Scanner
@@ -414,11 +435,39 @@ void scanner (string text){
 
 	string unit = "";
 	char currentChar;
+	string doubleSymbol, newDoubleSymbol;
 
 	for(int i = 0 ; i < text.size() ; ++i){
 		currentChar = text.at(i);
 
 		if(isSymbol(currentChar) || isSeparator(currentChar)){
+
+
+
+			if (isPotentialySymbolDouble(currentChar) && (i != text.size()-1)){
+				if (isSymbolDouble(currentChar, text.at(i+1))){
+					doubleSymbol = currentChar;
+					doubleSymbol += text.at(i+1);
+
+					if(unit.at(0) == '\"' && text.at(i+2) == '\"'){
+
+						newDoubleSymbol = "\"" + doubleSymbol +"\"";
+						addLexicalUnit(newDoubleSymbol, -1, Terminal, ELTER);
+						i = i + 2;
+						// TO DO : check si ça marche ça
+					}
+
+				}else{
+					symbols.push_back(string(1,currentChar)); // Cast Char to String				}
+				}
+			}else if (isSymbol(currentChar)){
+				symbols.push_back(string(1,currentChar)); // Cast Char to String
+
+			}else if (isSeparator(currentChar)){
+				separators.push_back(currentChar);
+			}
+
+
 			analyseUnit(unit);
 			unit = "";
 
@@ -426,19 +475,17 @@ void scanner (string text){
 			unit += currentChar;
 		}
 	}
-
 	analyseUnit(unit); // analyse the last unit found
 }
 
-void printLexicalUnits(){
-	cout << "List of lexical units :" << endl;
-	for (int i = 0; i < lexicalUnits.size(); ++i){
+void printLexicalUnits(vector<lexical_unit> listLexical){
+	for (int i = 0; i < listLexical.size(); ++i){
 		cout << "----------------" << endl;
 
-		cout << "Chaine : " << lexicalUnits[i].chaine << endl;
-		cout << "Action : " << lexicalUnits[i].action << endl;
-		cout << "type : " << lexicalUnits[i].type << endl;
-		cout << "Code : " << lexicalUnits[i].code << endl;
+		cout << "Chaine : " << listLexical[i].chaine << endl;
+		cout << "Action : " << listLexical[i].action << endl;
+		cout << "type : " << listLexical[i].type << endl;
+		cout << "Code : " << listLexical[i].code << endl;
 
 	}
 }
@@ -468,9 +515,21 @@ int main(){
 
 	// printForest();
 
-	scanner("1coucou \"rioe54ere\" ioehrz#2 654654 iorue#23ko");
+	scanner("1coucou \"rioe54ere + ioehrz#2 654654 iorue#23ko");
 
-	printLexicalUnits();
+	cout << "------------------------------------" << endl;
+	cout << "All lexical units" << endl;
+	printLexicalUnits(lexicalUnits);
+
+
+	cout << "------------------------------------" << endl;
+	cout << "Lexical units Terminal" << endl;
+	printLexicalUnits(lexicalTerminal);
+
+	cout << "------------------------------------" << endl;
+	cout << "Lexical units NonTerminal" << endl;
+	printLexicalUnits(lexicalNonTerminal);
+
 	// printSymbols();
 	// printSeparators();
 	printLexicalErrors();
