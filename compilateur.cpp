@@ -212,33 +212,23 @@ void printForest(){
 
 bool isSeparator(char charac){
 
-	if (charac == ' ' || charac == '	' || charac == '\n'){
-		return true;
-	}
-
-	return false;
+	return (charac == ' ' || charac == '	' || charac == '\n');
 }
 
 bool isSymbol(char charac){
 
-	if (charac == '+' || charac == '-' || charac == '=' || charac == '*' || charac == '&' || charac == '|' || charac == '/' || 
-		charac == '^' || charac == '(' || charac == ')' || charac == '[' || charac == ']' || charac == '{' || charac == '}' ||
-		charac == ';' || charac == ':' || charac == ',' || charac == '<' || charac == '>' || charac == '\''|| charac == '@' || 
-		charac == '!' || charac == '?'){
-			
-			return true;
-	}
+	return (charac == '+' || charac == '-' || charac == '=' || charac == '*' || charac == '&' || charac == '|' || charac == '/' || 
+			charac == '^' || charac == '(' || charac == ')' || charac == '[' || charac == ']' || charac == '{' || charac == '}' ||
+			charac == ';' || charac == ':' || charac == ',' || charac == '<' || charac == '>' || charac == '\''|| charac == '@' || 
+			charac == '!' || charac == '?');
 
-	return false;
 }
 
 bool isPotentialySymbolDouble(char charac){
-	if (charac == '=' || charac == '|' || charac == '&' || charac == '<' || charac == '>' || charac == ':' || charac == '+' ||
-		charac == '-' || charac == '!'){
-		return true;
-	}
+	return (charac == '=' || charac == '|' || charac == '&' || charac == '<' || 
+			charac == '>' || charac == ':' || charac == '+' ||
+			charac == '-' || charac == '!');
 
-	return false;
 }
 
 bool isSymbolDouble(char firstChar, char secondChar){
@@ -276,12 +266,8 @@ bool isSymbolDouble(char firstChar, char secondChar){
 }
 
 bool isInteger(char charac){
-	if (charac == '0' || charac == '1' || charac == '2' || charac == '3' || charac == '4' || charac == '5' || 
-		charac == '6' || charac == '7' || charac == '8' || charac == '9'){
-		return true;
-	}
-
-	return false;
+	return (charac == '0' || charac == '1' || charac == '2' || charac == '3' || charac == '4' || 
+			charac == '5' || charac == '6' || charac == '7' || charac == '8' || charac == '9');
 }
 
 bool isNumber(string unit){
@@ -297,13 +283,9 @@ bool isNumber(string unit){
 
 bool isString(string unit){
 
-	if (unit != ""){
-		if(unit.at(0) == '\"' && unit.at(unit.size()-1 == '\"')){
-			return true;
-		}
-	}
-
-	return false;
+	return (unit.size() > 1 && 
+			unit.at(0) == '\"' && 
+			unit.at(unit.size()-1) == '\"');
 }
 
 int actionOfLexicalUnit(string unit){
@@ -365,9 +347,11 @@ void analyseUnit(string unit){
 			action = actionOfLexicalUnit(unit);
 			// find the action of a string if there is one (-2 for an error, -1 for a unit without code and the code otherwise)
 
-			if (action == -1){
-				if(isString(unit)){
-					addLexicalUnit(unit, action, Terminal, ELTER);
+			if(isString(unit)){
+				addLexicalUnit(unit, -1, Terminal, ELTER);
+			}else if (action == -1){
+				if (unit.at(0) == '\"'){
+					lexicalErrors.push_back(unit);
 				}else{
 					addLexicalUnit(unit, action, NonTerminal, IDNTER);
 				}
@@ -384,97 +368,72 @@ void analyseUnit(string unit){
 	}
 }
 
-// previous version of Scanner
-
-// void scanner(string text){
-
-// 	unsigned int i;
-
-// 	string unit = "";
-// 	char currentChar;
-// 	string doubleSymbol;
-
-// 	for(i = 0 ; i < text.size() ; ++i){
-// 		currentChar = text.at(i);
-// 		if(isSymbol(currentChar) || isSeparator(currentChar)){
-// 			if (unit != "") {
-// 				if (!isInteger(unit.at(0))){
-// 					lexicalUnits.push_back(unit);
-// 				}else if(isNumber(unit)){
-// 					lexicalUnits.push_back(unit);
-// 				}else{
-// 					lexicalErrors.push_back(unit);
-// 				}
-// 			}
-// 			unit = "";
-
-// 			if (isPotentialySymbolDouble(currentChar) && (i != text.size()-1)){
-// 				if (isSymbolDouble(currentChar, text.at(i+1))){
-// 					doubleSymbol = currentChar;
-// 					doubleSymbol += text.at(i+1);
-// 					symbols.push_back(doubleSymbol);
-// 					++i;
-// 				}else{
-// 					symbols.push_back(string(1,currentChar)); // Cast Char to String				}
-// 				}
-// 			}else if (isSymbol(currentChar)){
-// 				symbols.push_back(string(1,currentChar)); // Cast Char to String
-
-// 			}else if (isSeparator(currentChar)){
-// 				separators.push_back(currentChar);
-// 			} // TO DO -> Gérer les actions
-// 		}else{
-// 			unit += currentChar;
-// 		}
-// 	}
-// 	// Add the last unit found
-// 	lexicalUnits.push_back(unit);
-// }
-
 void scanner (string text){
 
 	string unit = "";
 	char currentChar;
 	string doubleSymbol, newDoubleSymbol;
+	bool isFillingString = false;
 
 	for(int i = 0 ; i < text.size() ; ++i){
 		currentChar = text.at(i);
 
-		if(isSymbol(currentChar) || isSeparator(currentChar)){
+		// Construction d'une chaine de caractère
+		if(currentChar == '\"'){
 
-
-
-			if (isPotentialySymbolDouble(currentChar) && (i != text.size()-1)){
-				if (isSymbolDouble(currentChar, text.at(i+1))){
-					doubleSymbol = currentChar;
-					doubleSymbol += text.at(i+1);
-
-					if(unit.at(0) == '\"' && text.at(i+2) == '\"'){
-
-						newDoubleSymbol = "\"" + doubleSymbol +"\"";
-						addLexicalUnit(newDoubleSymbol, -1, Terminal, ELTER);
-						i = i + 2;
-						// TO DO : check si ça marche ça
-					}
-
-				}else{
-					symbols.push_back(string(1,currentChar)); // Cast Char to String				}
-				}
-			}else if (isSymbol(currentChar)){
-				symbols.push_back(string(1,currentChar)); // Cast Char to String
-
-			}else if (isSeparator(currentChar)){
-				separators.push_back(currentChar);
+			if(!isFillingString){
+				analyseUnit(unit);
+				unit = "";
 			}
+			isFillingString = !isFillingString;
+		}
 
+		if(!isFillingString){
 
-			analyseUnit(unit);
-			unit = "";
+			if(isSymbol(currentChar) || isSeparator(currentChar)){
 
+				if (isPotentialySymbolDouble(currentChar) && (i != text.size()-1)){
+					if (isSymbolDouble(currentChar, text.at(i+1))){
+						doubleSymbol = currentChar;
+						doubleSymbol += text.at(i+1);
+
+						if(unit != "" && unit.at(0) == '\"'){
+
+							if(text.at(i+2) == '\"'){
+								newDoubleSymbol = "\"" + doubleSymbol +"\"";
+								addLexicalUnit(newDoubleSymbol, -1, Terminal, ELTER);
+								i = i + 2;
+							}else{
+								newDoubleSymbol = "\"" + doubleSymbol;
+								lexicalErrors.push_back(newDoubleSymbol);
+								++i;
+							}
+						}else{
+							addLexicalUnit(doubleSymbol, -1, NonTerminal, IDNTER);	// if the double symbol isn't a string then we add it as a NonTerminal
+						}
+
+					}else{
+						symbols.push_back(string(1,currentChar)); // Cast Char to String				}
+					}
+				}else if (isSymbol(currentChar)){
+					symbols.push_back(string(1,currentChar)); // Cast Char to String
+
+				}else if (isSeparator(currentChar)){
+					separators.push_back(currentChar);
+				}
+
+				analyseUnit(unit);
+				unit = "";
+
+			}else{
+				unit += currentChar;
+			}
 		}else{
 			unit += currentChar;
 		}
+
 	}
+
 	analyseUnit(unit); // analyse the last unit found
 }
 
@@ -515,7 +474,7 @@ int main(){
 
 	// printForest();
 
-	scanner("1coucou \"rioe54ere + ioehrz#2 654654 iorue#23ko");
+	scanner("1coucou \"\" \"->\" -> rioe54ere \"coucou lol\" dsf \"-> ioehrz#2 \" 654654 iorueko#23k\" ezae");
 
 	cout << "------------------------------------" << endl;
 	cout << "All lexical units" << endl;
