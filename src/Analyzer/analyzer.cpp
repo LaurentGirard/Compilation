@@ -1,4 +1,5 @@
 #include "analyzer.hpp"
+#include "scanner.hpp"
 
 bool analyzer(node * ptr){
 
@@ -21,15 +22,12 @@ bool analyzer(node * ptr){
 		break;
 
 		case Star:
-			while (analyzer(ptr->typeNode.star->son)){
-
-			}
+			return analyzer(ptr->typeNode.star->son;
+			
 		break;
 
 		case Un:
-			if(analyzer(ptr->typeNode.un->son)){
-
-			}
+			return analyzer(ptr->typeNode.un->son);
 		break;
 
 		case Atom:
@@ -40,7 +38,13 @@ bool analyzer(node * ptr){
 				break;
 
 				case NonTerminal:
-					
+					// if analyzer(A[ptr->typeNode.atom->code]){
+					//	if (ptr->typeNode.atom->action != 0){
+					//		TODO: Function Gaction
+					//	}
+					// }else{
+					// 	return false;
+					// }
 				break;
 			}
 		break;

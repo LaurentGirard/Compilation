@@ -3,6 +3,7 @@
 
 #include "Forest/forest.hpp"
 #include "Analyzer/scanner.hpp"
+#include "Analyzer/analyzer.hpp"
 
 int main(){
 

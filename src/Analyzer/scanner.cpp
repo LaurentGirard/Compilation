@@ -101,7 +101,7 @@ int actionOfLexicalUnit(string unit){
 		}
 	}
 
-	return -1;
+	return 0;
 }
 
 string rmActionFromLexicalUnit(string unit){
@@ -122,7 +122,7 @@ void addLexicalUnit(string chaine, int action, AtomType type, Code code){
 	lexical_unit currentLexical;
 
 	currentLexical.chaine = chaine;
-	currentLexical.action = action; // -1 mean no action
+	currentLexical.action = action; // 0 mean no action
 	currentLexical.type = type;
 	currentLexical.code = code;
 
@@ -145,8 +145,8 @@ void analyseUnit(string unit){
 			// find the action of a string if there is one (-2 for an error, -1 for a unit without code and the code otherwise)
 
 			if(isString(unit)){
-				addLexicalUnit(unit, -1, Terminal, ELTER);
-			}else if (action == -1){
+				addLexicalUnit(unit, 0, Terminal, ELTER);
+			}else if (action == 0){
 				if (unit.at(0) == '\"'){
 					lexicalErrors.push_back(unit);
 				}else{
@@ -158,7 +158,7 @@ void analyseUnit(string unit){
 				addLexicalUnit(rmActionFromLexicalUnit(unit), action, NonTerminal, IDNTER);
 			}
 		}else if(isNumber(unit)){
-			addLexicalUnit(unit, -1, Terminal, ELTER);
+			addLexicalUnit(unit, 0, Terminal, ELTER);
 		}else{
 			lexicalErrors.push_back(unit);
 		}
@@ -198,7 +198,7 @@ void scanner (string text){
 
 							if(text.at(i+2) == '\"'){
 								newDoubleSymbol = "\"" + doubleSymbol +"\"";
-								addLexicalUnit(newDoubleSymbol, -1, Terminal, ELTER);
+								addLexicalUnit(newDoubleSymbol, 0, Terminal, ELTER);
 								i = i + 2;
 							}else{
 								newDoubleSymbol = "\"" + doubleSymbol;
@@ -206,7 +206,7 @@ void scanner (string text){
 								++i;
 							}
 						}else{
-							addLexicalUnit(doubleSymbol, -1, NonTerminal, IDNTER);	// if the double symbol isn't a string then we add it as a NonTerminal
+							addLexicalUnit(doubleSymbol, 0, NonTerminal, IDNTER);	// if the double symbol isn't a string then we add it as a NonTerminal
 						}
 
 					}else{
