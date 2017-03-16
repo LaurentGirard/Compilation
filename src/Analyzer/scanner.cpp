@@ -1,11 +1,15 @@
 #include "scanner.hpp"
 
+vector<node*> forest;
+
 vector<char> separators;
 vector<string> symbols;
 vector<string> lexicalErrors;
 vector<lexical_unit> lexicalUnits;
 vector<lexical_unit> lexicalTerminal;
 vector<lexical_unit> lexicalNonTerminal;
+
+unsigned int scanIterator = 0;
 
 bool isSeparator(char charac){
 
@@ -269,4 +273,79 @@ void printLexicalErrors(){
 	for (int i = 0; i < lexicalErrors.size(); ++i){
 		cout << lexicalErrors[i] << endl;
 	}
+}
+
+
+// ------------------------------------------
+// Analyseur
+
+// need it for now, probably to delete when scanner will change
+bool callAnalyzer(node* ptr, string text){
+
+	// scan the entire text (need to change)
+	scanner(text);
+
+	forest = buildForest();
+	// analyzer will iterate on the global array filled by the scanner (will probably change)
+	return analyzer(ptr);
+
+}
+
+bool analyzer(node* ptr){
+
+	switch(ptr->op){
+
+		case Conc:
+			if(analyzer(ptr->typeNode.conc->left)){
+				return analyzer(ptr->typeNode.conc->right);
+			}else{
+				return false;
+			}
+		break;
+
+		case Union:
+			if (analyzer(ptr->typeNode.unio->left)){
+				return true;
+			}else{
+				return analyzer(ptr->typeNode.unio->right);
+			}
+		break;
+
+		case Star:
+			return analyzer(ptr->typeNode.star->son);
+			
+		break;
+
+		case Un:
+			return analyzer(ptr->typeNode.un->son);
+		break;
+
+		case Atom:
+			switch(ptr->typeNode.atom->type){
+
+				case Terminal:
+					if(ptr->typeNode.atom->code == lexicalUnits[scanIterator].chaine){
+						if (ptr->typeNode.atom->action != 0){
+							// G0Action sur ptr->typeNode.atom->action
+							++scanIterator;
+						}else{
+							return false;
+						}
+					} 
+				break;
+
+				case NonTerminal:
+					// if analyzer(forest[ptr->typeNode.atom->code]){
+					// 	if (ptr->typeNode.atom->action != 0){
+					// 		TODO: Function Gaction
+					// 	}
+					// }else{
+					// 	return false;
+					// }
+				break;
+			}
+		break;
+	}
+
+	return false; // probably to remove in the future
 }

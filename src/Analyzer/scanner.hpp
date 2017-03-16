@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "../enumerations.hpp"
+#include "../Forest/forest.hpp"
 
 using namespace std;
 
@@ -29,5 +30,8 @@ void analyseUnit(string unit);
 void scanner (string text);
 void printLexicalUnits(string lexicalType);
 void printLexicalErrors();
+
+bool callAnalyzer(node * ptr, string text);
+bool analyzer(node* ptr);
 
 #endif // __SCANNER_HPP__

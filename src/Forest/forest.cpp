@@ -107,36 +107,28 @@ void printTree(node* n){
 	printTreeRec(n, 0);
 }
 
-void printForest(){
+vector<node*> buildForest(){
 
-	cout << "++++++++++ A1 +++++++++"<< endl;
+	vector<node*> forest;
 
 	node* A1 = genConc( genStar( genConc(
-	 genConc( genConc( genAtom("N", 0, NonTerminal),
-	  genAtom("fleche", 0, Terminal)), genAtom("E",0,NonTerminal)),
-	   genAtom(";",1,Terminal))), genAtom(";",0,Terminal) ) ;
+		 genConc( genConc( genAtom("N", 0, NonTerminal),
+		  genAtom("fleche", 0, Terminal)), genAtom("E",0,NonTerminal)),
+		   genAtom(";",1,Terminal))), genAtom(";",0,Terminal) ) ;
 
-	printTree(A1);
-
-	cout << "++++++++++ A2 +++++++++"<< endl;
+	forest.push_back(A1);
 
 	node* A2 = genAtom("IDNTER", 0, NonTerminal);
- 
-	printTree(A2);
 
-	cout << "++++++++++ A3 +++++++++"<< endl;
+	forest.push_back(A2);
 
 	node* A3 = genConc ( genStar( genConc ( genAtom("+",0,Terminal), genAtom("T", 0, NonTerminal))), genAtom("T",0,NonTerminal) );
 
-	printTree(A3);
-
-	cout << "++++++++++ A4 +++++++++"<< endl;
+	forest.push_back(A3);
 
 	node* A4 = genConc ( genStar( genConc ( genAtom("F",0,NonTerminal), genAtom(".", 0, NonTerminal))), genAtom("F",0,NonTerminal) );
 
-	printTree(A4);
-
-	cout << "++++++++++ A5 +++++++++"<< endl;
+	forest.push_back(A4);
 
 	node* A5 = genUnion( genUnion( genUnion( genUnion( genConc( genConc( 
 					genAtom("(/",0,Terminal),genAtom("E",0,NonTerminal) ),
@@ -146,5 +138,17 @@ void printForest(){
 							genConc( genConc( genAtom( "(",0,Terminal ), genAtom( "E",0,NonTerminal )),
 									genAtom( ")",0,Terminal )) ), genAtom( "ELTER",0,Terminal)) , genAtom( "IDNTER",0,Terminal));
 
-	printTree(A5);
+	forest.push_back(A5);
+
+	return forest;
+}
+
+void printForest(vector<node*> forest){
+
+	unsigned int i;
+
+	for(i = 0; i < forest.size() ; ++i){
+		cout << "++++++++++ A" << i+1 << "+++++++++"<< endl;
+		printTree(forest[i]);
+	}
 }

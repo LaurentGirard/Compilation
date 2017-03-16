@@ -7,7 +7,8 @@
 
 int main(){
 
-	// printForest();
+	// vector<node*> forest = buildForest();
+	// printForest(forest);
 
 	scanner("1coucou \"\" \"->\" -> rioe54ere \"coucou lol\" dsf \"-> ioehrz#2 \" 654654 iorueko#23k\" ezae");
 

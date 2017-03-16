@@ -1,14 +1,15 @@
-#ifndef __ANALYZER_HPP__
-#define __ANALYZER_HPP__
+// #ifndef __ANALYZER_HPP__
+// #define __ANALYZER_HPP__
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include "../enumerations.hpp"
-#include "../Forest/forest.hpp"
+// #include <iostream>
+// #include <string>
+// #include <vector>
+// #include "../enumerations.hpp"
+// #include "../Forest/forest.hpp"
 
-using namespace std;
+// using namespace std;
 
-bool analyzer(node* ptr);
+// bool callAnalyzer(node * ptr, string text);
+// bool analyzer(node* ptr);
 
-#endif // __ANALYZER_HPP__
+// #endif // __ANALYZER_HPP__
