@@ -1,6 +1,7 @@
 #include "scanner.hpp"
+#include <map>
 
-vector<node*> forest;
+map<string,node*> forest;
 
 vector<char> separators;
 vector<string> symbols;
@@ -299,65 +300,70 @@ void printLexicalErrors(){
 // ------------------------------------------
 // Analyseur
 
-// need it for now, probably to delete when scanner will change
 bool callAnalyzer(node* ptr){
 
-	// scan the entire text (need to change)
-	scanner();
+	// scan the first lexical unit
+	lexical_unit* lu;
+
+	do{
+		lu = scanner();
+	}while(lu == NULL);
 
 	forest = buildForest();
-	// analyzer will iterate on the global array filled by the scanner (will probably change)
-	return analyzer(ptr);
+
+	return analyzer(ptr, lu);
 
 }
 
-bool analyzer(node* ptr){
+bool analyzer(node* ptr, lexical_unit* lu){
 
 	switch(ptr->op){
 
 		case Conc:
-			if(analyzer(ptr->typeNode.conc->left)){
-				return analyzer(ptr->typeNode.conc->right);
+			if(analyzer(ptr->typeNode.conc->left, lu)){
+				return analyzer(ptr->typeNode.conc->right, lu);
 			}else{
 				return false;
 			}
 		break;
 
 		case Union:
-			if (analyzer(ptr->typeNode.unio->left)){
+			if (analyzer(ptr->typeNode.unio->left, lu)){
 				return true;
 			}else{
-				return analyzer(ptr->typeNode.unio->right);
+				return analyzer(ptr->typeNode.unio->right, lu);
 			}
 		break;
 
 		case Star:
-			return analyzer(ptr->typeNode.star->son);
+			return analyzer(ptr->typeNode.star->son, lu);
 			
 		break;
 
 		case Un:
-			return analyzer(ptr->typeNode.un->son);
+			return analyzer(ptr->typeNode.un->son, lu);
 		break;
 
 		case Atom:
 			switch(ptr->typeNode.atom->type){
 
 				case Terminal:
-					// if(ptr->typeNode.atom->code == lexicalUnits[scanIterator].chaine){
-					// 	if (ptr->typeNode.atom->action != 0){
-					// 		// G0Action sur ptr->typeNode.atom->action
-					// 		++scanIterator;
-					// 	}else{
-					// 		return false;
-					// 	}
-					// } 
+					if(ptr->typeNode.atom->code == lu->chaine){
+						if (ptr->typeNode.atom->action != 0){
+							// G0Action sur ptr->typeNode.atom->action
+							do{
+								lu = scanner();
+							}while(lu == NULL);
+						}else{
+							return false;
+						}
+					} 
 				break;
 
 				case NonTerminal:
-					// if analyzer(forest[ptr->typeNode.atom->code]){
+					// if (analyzer(forest[ptr->typeNode.atom->code])){
 					// 	if (ptr->typeNode.atom->action != 0){
-					// 		TODO: Function Gaction
+					// 		// TODO: Function Gaction
 					// 	}
 					// }else{
 					// 	return false;

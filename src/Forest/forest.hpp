@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
+#include <map>
 #include "../enumerations.hpp"
 
 using namespace std;
@@ -52,7 +52,7 @@ node* genAtom(string code, int action, AtomType type);
 void printTreeRec(node* n, int cpt);
 void printTree(node* n);
 // need to change as a map
-vector<node*> buildForest();
-void printForest(vector<node*> forest);
+map<string,node*> buildForest();
+void printForest(map<string,node*> forest);
 
 #endif // __FOREST_HPP__

@@ -7,7 +7,7 @@
 
 int main(){
 
-	// vector<node*> forest = buildForest();
+	// map<string,node*> forest = buildForest();
 	// printForest(forest);
 
 	lexical_unit* lu = scanner();

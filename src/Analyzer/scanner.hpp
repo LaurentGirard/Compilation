@@ -33,6 +33,6 @@ void printLexicalUnits(string lexicalType);
 void printLexicalErrors();
 
 bool callAnalyzer(node * ptr);
-bool analyzer(node* ptr);
+bool analyzer(node* ptr, lexical_unit* lu);
 
 #endif // __SCANNER_HPP__
