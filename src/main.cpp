@@ -10,11 +10,16 @@ int main(){
 	// vector<node*> forest = buildForest();
 	// printForest(forest);
 
-	scanner("1coucou \"\" \"->\" -> rioe54ere \"coucou lol\" dsf \"-> ioehrz#2 \" 654654 iorueko#23k\" ezae");
-
-	cout << "------------------------------------" << endl;
-	cout << "All lexical units" << endl;
-	printLexicalUnits("lexicalUnits");
+	lexical_unit* lu = scanner();
+	lu = scanner();
+	lu = scanner();
+	lu = scanner();
+	lu = scanner();
+	lu = scanner();
+	lu = scanner();
+	lu = scanner();
+	lu = scanner();
+	lu = scanner();
 
 
 	cout << "------------------------------------" << endl;

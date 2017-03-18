@@ -25,13 +25,14 @@ bool isNumber(string unit);
 bool isString(string unit);
 int actionOfLexicalUnit(string unit);
 string rmActionFromLexicalUnit(string unit);
-void addLexicalUnit(string chaine, int action, AtomType type, Code code);
-void analyseUnit(string unit);
-void scanner (string text);
+lexical_unit* newLexicalUnit(string chaine, int action, AtomType type, Code code);
+lexical_unit* analyseUnit(string unit);
+lexical_unit* scanner();
+void printLexicalUnit(lexical_unit* lu);
 void printLexicalUnits(string lexicalType);
 void printLexicalErrors();
 
-bool callAnalyzer(node * ptr, string text);
+bool callAnalyzer(node * ptr);
 bool analyzer(node* ptr);
 
 #endif // __SCANNER_HPP__
