@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
+#include <fstream>
 #include "../enumerations.hpp"
 #include "../Forest/forest.hpp"
 
@@ -15,6 +17,8 @@ struct lexical_unit{
 	AtomType type;
 	Code code;
 };
+
+void putFileIntoString(string filename);
 
 bool isSeparator(char charac);
 bool isSymbol(char charac);
@@ -34,5 +38,8 @@ void printLexicalErrors();
 
 bool callAnalyzer(node * ptr);
 bool analyzer(node* ptr, lexical_unit* lu);
+void G0Action(int action);
+void stack(node* tree);
+node* unstack();
 
 #endif // __SCANNER_HPP__

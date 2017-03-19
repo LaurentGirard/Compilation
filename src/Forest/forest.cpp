@@ -103,7 +103,7 @@ void printTreeRec(node* n, int cpt){
 }
 
 void printTree(node* n){
-
+	
 	printTreeRec(n, 0);
 }
 
@@ -146,11 +146,6 @@ map<string,node*> buildForest(){
 void printForest(map<string,node*> forest){
 
 	unsigned int i = 1;
-
-	// for(i = 0; i < forest.size() ; ++i){
-	// 	cout << "++++++++++ A" << i+1 << "+++++++++"<< endl;
-	// 	printTree(forest[i]);
-	// }
 
 	for (map<string,node*>::iterator it=forest.begin(); it!=forest.end(); ++it){
     	cout << "++++++++++ A" << i << " +++++++++"<< endl;

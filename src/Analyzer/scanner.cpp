@@ -1,5 +1,5 @@
 #include "scanner.hpp"
-#include <map>
+#include "../Forest/forest.hpp"
 
 map<string,node*> forest;
 
@@ -10,9 +10,19 @@ vector<string> lexicalErrors;
 vector<lexical_unit*> lexicalTerminal;
 vector<lexical_unit*> lexicalNonTerminal;
 
-string toScan = "\"izhe\"        \"->\" -> rioe54e+re dzenl#3 \"coucou lol\" dsf \"-> ioehrz#2 \" 654654 iorueko#23k ezae";
+vector<node*> pile;
+
+string toScan;// = "\"izhe\"        \"->\" -> rioe54e+re dzenl#3 \"coucou lol\" dsf \"-> ioehrz#2 \" 654654 iorueko#23k ezae";
 
 unsigned int scanIterator = 0;
+
+void putFileIntoString(string filename){
+
+	ifstream in(filename);
+	string toString((istreambuf_iterator<char>(in)), istreambuf_iterator<char>());
+
+	toScan = toString;
+}
 
 bool isSeparator(char charac){
 
@@ -186,7 +196,7 @@ lexical_unit* scanner(){
 
 	for(int i = scanIterator ; i < toScan.size() ; ++i){
 		currentChar = toScan.at(i);
-
+		cout << "currentchar is : " << currentChar << endl;
 		// Construction d'une chaine de caractère
 		if(currentChar == '\"'){
 
@@ -200,8 +210,8 @@ lexical_unit* scanner(){
 		}
 
 		if(!isFillingString){
-
 			if(isSymbol(currentChar) || isSeparator(currentChar)){
+		cout << "unit is : " << unit << endl;
 
 				if (isPotentialySymbolDouble(currentChar) && (i != toScan.size()-1)){
 					if (isSymbolDouble(currentChar, toScan.at(i+1))){
@@ -302,6 +312,9 @@ void printLexicalErrors(){
 
 bool callAnalyzer(node* ptr){
 
+	// init the global string toScan from the file
+	putFileIntoString("GPL.txt");
+
 	// scan the first lexical unit
 	lexical_unit* lu;
 
@@ -336,8 +349,7 @@ bool analyzer(node* ptr, lexical_unit* lu){
 		break;
 
 		case Star:
-			return analyzer(ptr->typeNode.star->son, lu);
-			
+			return analyzer(ptr->typeNode.star->son, lu);	
 		break;
 
 		case Un:
@@ -350,7 +362,7 @@ bool analyzer(node* ptr, lexical_unit* lu){
 				case Terminal:
 					if(ptr->typeNode.atom->code == lu->chaine){
 						if (ptr->typeNode.atom->action != 0){
-							// G0Action sur ptr->typeNode.atom->action
+							G0Action(ptr->typeNode.atom->action);
 							do{
 								lu = scanner();
 							}while(lu == NULL);
@@ -361,17 +373,78 @@ bool analyzer(node* ptr, lexical_unit* lu){
 				break;
 
 				case NonTerminal:
-					// if (analyzer(forest[ptr->typeNode.atom->code])){
-					// 	if (ptr->typeNode.atom->action != 0){
-					// 		// TODO: Function Gaction
-					// 	}
-					// }else{
-					// 	return false;
-					// }
+					if (analyzer(forest[ptr->typeNode.atom->code], lu)){
+						if (ptr->typeNode.atom->action != 0){
+							G0Action(ptr->typeNode.atom->action);
+						}
+						return true;
+					}else{
+						return false;
+					}
 				break;
 			}
 		break;
 	}
 
 	return false; // probably to remove in the future
+}
+
+void G0Action(int action){
+	node* T1;
+	node* T2;
+
+	switch(action){
+
+		case 1:
+			T1 = unstack();
+			T2 = unstack();
+			// what's this ?
+			// forest[T2->code + 5] = T1;
+		break;
+
+		case 2:
+			// what's this ? I'm probably wrong
+			stack(genAtom(lexicalTerminal[0]->chaine, 
+						  lexicalTerminal[0]->action, 
+						  lexicalTerminal[0]->type));
+		break;
+
+		case 3:			
+			T1 = unstack();
+			T2 = unstack();
+			stack(genUnion(T1,T2));
+		break;
+
+		case 4:
+			T1 = unstack();
+			T2 = unstack();
+			stack(genConc(T1,T2));
+		break;
+
+		case 5:
+			// what's this ?
+			// if()
+		break;
+
+		case 6:
+			T1 = unstack();
+			stack(genStar(T1));
+		break;
+
+		case 7:
+			T1 = unstack();
+			stack(genUn(T1));
+		break;
+	}
+}
+
+void stack(node* tree){
+	pile.push_back(tree);
+}
+
+node* unstack(){
+	node* lastNode = pile[pile.size()-1];
+	pile.pop_back();
+
+	return lastNode;
 }

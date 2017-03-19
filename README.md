@@ -1,6 +1,9 @@
 # Compilation
 
 To compile : make (from root)
+
 To execute : bin/compilator
 
-TODO: Remake scanner to scan only 1 lexical unit and do analyzer + G0Action
+TODO: Understand how G0Action works, test the analyzer
+
+Problem known : Scanner cannot scan without speratator between lexical units (probably need to remake it)

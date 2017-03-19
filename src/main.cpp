@@ -7,6 +7,8 @@
 
 int main(){
 
+	putFileIntoString("GPL.txt");
+
 	// map<string,node*> forest = buildForest();
 	// printForest(forest);
 

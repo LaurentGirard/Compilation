@@ -51,7 +51,6 @@ node* genAtom(string code, int action, AtomType type);
 
 void printTreeRec(node* n, int cpt);
 void printTree(node* n);
-// need to change as a map
 map<string,node*> buildForest();
 void printForest(map<string,node*> forest);
 
