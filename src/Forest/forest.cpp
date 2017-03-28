@@ -112,31 +112,35 @@ map<string,node*> buildForest(){
 	map<string,node*> forest;
 
 	node* A1 = genConc( genStar( genConc(
-		 genConc( genConc( genAtom("N", 0, NonTerminal),
-		  genAtom("fleche", 0, Terminal)), genAtom("E",0,NonTerminal)),
-		   genAtom(";",1,Terminal))), genAtom(";",0,Terminal) ) ;
+		 genConc( genConc( genAtom("N", 0,NonTerminal),
+		  genAtom("fleche", 0,Terminal)), genAtom("E",0,NonTerminal)),
+		   genAtom(",",1,Terminal))), genAtom(";",0,Terminal) ) ;
 
 	forest["S"] = A1;
 
-	node* A2 = genAtom("IDNTER", 0, NonTerminal);
+	node* A2 = genAtom("IDNTER", 0, Terminal);
 
 	forest["N"] = A2;
 
-	node* A3 = genConc ( genStar( genConc ( genAtom("+",0,Terminal), genAtom("T", 0, NonTerminal))), genAtom("T",0,NonTerminal) );
+	node* A3 = genConc ( genAtom("T",0,NonTerminal), genStar( genConc ( genAtom("+", 0, Terminal), genAtom("T",0,NonTerminal) )));
 
 	forest["E"] = A3;
 
-	node* A4 = genConc ( genStar( genConc ( genAtom("F",0,NonTerminal), genAtom(".", 0, NonTerminal))), genAtom("F",0,NonTerminal) );
+	node* A4 = genConc ( genAtom("F",0,NonTerminal), genStar( genConc ( genAtom(".", 0, Terminal), genAtom("F",0,NonTerminal) )));
 
 	forest["T"] = A4;
 
-	node* A5 = genUnion( genUnion( genUnion( genUnion( genConc( genConc( 
-					genAtom("(/",0,Terminal),genAtom("E",0,NonTerminal) ),
-						genAtom( "/)",0,Terminal)),
-							genConc( genConc( genAtom( "[",0,Terminal ), genAtom( "E",0,NonTerminal )),
-									genAtom( "]",0,Terminal )) ), 
-							genConc( genConc( genAtom( "(",0,Terminal ), genAtom( "E",0,NonTerminal )),
-									genAtom( ")",0,Terminal )) ), genAtom( "ELTER",0,Terminal)) , genAtom( "IDNTER",0,Terminal));
+	// node* A5 = genUnion( genUnion( genUnion( genUnion( genConc( genConc( 
+	// 				genAtom("(/",0,Terminal),genAtom("E",0,NonTerminal) ),
+	// 					genAtom( "/)",0,Terminal)),
+	// 						genConc( genConc( genAtom( "[",0,Terminal), genAtom( "E",0,NonTerminal )),
+	// 								genAtom( "]",0,Terminal )) ), 
+	// 						genConc( genConc( genAtom( "(",0,Terminal), genAtom( "E",0,NonTerminal )),
+	// 								genAtom( ")",0,Terminal )) ), genAtom( "ELTER",0,Terminal)) , genAtom( "IDNTER",0,Terminal));
+
+	node* A5 = genUnion(genUnion(genUnion(genUnion(genAtom( "IDNTER",0,Terminal), genAtom( "ELTER",0,Terminal)), genConc(genAtom( "(",0,Terminal),genConc(genAtom( "E",0,NonTerminal), genAtom( ")",0,Terminal)))), 	genConc(genAtom( "[",0,Terminal), genConc(genAtom("E",0,NonTerminal), genAtom( "]",0,Terminal)))), 	genConc(genAtom("(/",0,Terminal), genConc(genAtom("E",0,NonTerminal), genAtom( "/)",0,Terminal))));
+
+
 
 	forest["F"] = A5;
 

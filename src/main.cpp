@@ -7,34 +7,28 @@
 
 int main(){
 
-	putFileIntoString("GPL.txt");
+	// putFileIntoString("GPL.txt");
 
-	// map<string,node*> forest = buildForest();
+	map<string,node*> forest = buildForest();
 	// printForest(forest);
 
-	lexical_unit* lu = scanner();
-	lu = scanner();
-	lu = scanner();
-	lu = scanner();
-	lu = scanner();
-	lu = scanner();
-	lu = scanner();
-	lu = scanner();
-	lu = scanner();
-	lu = scanner();
+	// lexical_unit* lu = scanner();
+	
+	bool analyzer = callAnalyzer(forest["S"]);
 
-
+	cout << "ça a marché : " << analyzer << endl;
 	cout << "------------------------------------" << endl;
-	cout << "Lexical units Terminal" << endl;
-	printLexicalUnits("lexicalTerminal");
+	
+	// cout << "Lexical units Terminal" << endl;
+	// printLexicalUnits("lexicalTerminal");
 
-	cout << "------------------------------------" << endl;
-	cout << "Lexical units NonTerminal" << endl;
-	printLexicalUnits("lexicalNonTerminal");
+	// cout << "------------------------------------" << endl;
+	// cout << "Lexical units NonTerminal" << endl;
+	// printLexicalUnits("lexicalNonTerminal");
 
 	// printSymbols();
-	// printSeparators();
-	printLexicalErrors();
+
+	// printLexicalErrors();
 
 	return 0;
 }

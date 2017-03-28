@@ -15,7 +15,7 @@ struct lexical_unit{
 	string chaine;
 	int action;
 	AtomType type;
-	Code code;
+	string code; // changer to string
 };
 
 void putFileIntoString(string filename);
@@ -37,7 +37,7 @@ void printLexicalUnits(string lexicalType);
 void printLexicalErrors();
 
 bool callAnalyzer(node * ptr);
-bool analyzer(node* ptr, lexical_unit* lu);
+bool analyzer(node* ptr);
 void G0Action(int action);
 void stack(node* tree);
 node* unstack();
