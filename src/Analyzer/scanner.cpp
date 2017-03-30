@@ -10,12 +10,13 @@ vector<string> lexicalErrors;
 vector<lexical_unit*> lexicalTerminal;
 vector<lexical_unit*> lexicalNonTerminal;
 
-vector<node*> pile;
+stack<node*> pile;
 
 string toScan;
 lexical_unit* lu;
 
 unsigned int scanIterator = 0;
+bool isScanFinished = false;
 
 void putFileIntoString(string filename){
 
@@ -35,7 +36,7 @@ bool isSymbol(char charac){
 	return (charac == '+' || charac == '-' || charac == '=' || charac == '*' || charac == '&' || charac == '|' || charac == '/' || 
 			charac == '^' || charac == '(' || charac == ')' || charac == '[' || charac == ']' || charac == '{' || charac == '}' ||
 			charac == ';' || charac == ':' || charac == ',' || charac == '<' || charac == '>' || charac == '\''|| charac == '@' || 
-			charac == '!' || charac == '?');
+			charac == '!' || charac == '?' || charac == '.');
 
 }
 
@@ -195,83 +196,90 @@ lexical_unit* scanner(){
 	int nbSeparators = 0;
 	unsigned int j;
 
-	for(int i = scanIterator ; i < toScan.size() ; ++i){
-		currentChar = toScan.at(i);
-		// cout << "currentchar is : " << currentChar << endl;
-		// Construction d'une chaine de caractère
-		if(currentChar == '\"'){
+	if(toScan.substr(scanIterator, toScan.size()).size() < 1){
+		isScanFinished = true;
+		return NULL;
+	}else{
+		for(int i = scanIterator ; i < toScan.size() ; ++i){
+			currentChar = toScan.at(i);
+			// cout << "currentchar is : " << currentChar << endl;
+			// Construction d'une chaine de caractère
+			if(currentChar == '\"'){
 
-			isFillingString = !isFillingString;
+				isFillingString = !isFillingString;
+
+				if(!isFillingString){
+					unit += currentChar;
+					scanIterator += unit.size() + nbSeparators;
+					return analyseUnit(unit);
+				}
+			}
 
 			if(!isFillingString){
-				unit += currentChar;
-				scanIterator += unit.size() + nbSeparators;
-				return analyseUnit(unit);
-			}
-		}
+				if(isSymbol(currentChar) || isSeparator(currentChar)){
+			// cout << "unit is : " << unit << endl;
 
-		if(!isFillingString){
-			if(isSymbol(currentChar) || isSeparator(currentChar)){
-		// cout << "unit is : " << unit << endl;
+					if (isPotentialySymbolDouble(currentChar) && (i != toScan.size()-1)){
+						if (isSymbolDouble(currentChar, toScan.at(i+1))){
+							doubleSymbol = currentChar;
+							doubleSymbol += toScan.at(i+1);
 
-				if (isPotentialySymbolDouble(currentChar) && (i != toScan.size()-1)){
-					if (isSymbolDouble(currentChar, toScan.at(i+1))){
-						doubleSymbol = currentChar;
-						doubleSymbol += toScan.at(i+1);
+							if(unit != "" && unit.at(0) == '\"'){
 
-						if(unit != "" && unit.at(0) == '\"'){
-
-							if(toScan.at(i+2) == '\"'){
-								newDoubleSymbol = "\"" + doubleSymbol +"\"";
-								scanIterator += newDoubleSymbol.size() + nbSeparators;
-								return newLexicalUnit(newDoubleSymbol, 0, Terminal, newDoubleSymbol);
+								if(toScan.at(i+2) == '\"'){
+									newDoubleSymbol = "\"" + doubleSymbol +"\"";
+									scanIterator += newDoubleSymbol.size() + nbSeparators;
+									return newLexicalUnit(newDoubleSymbol, 0, Terminal, newDoubleSymbol);
+								}else{
+									newDoubleSymbol = "\"" + doubleSymbol;
+									scanIterator += newDoubleSymbol.size() + nbSeparators;
+									lexicalErrors.push_back(newDoubleSymbol);
+									return NULL;
+								}
 							}else{
-								newDoubleSymbol = "\"" + doubleSymbol;
-								scanIterator += newDoubleSymbol.size() + nbSeparators;
-								lexicalErrors.push_back(newDoubleSymbol);
-								return NULL;
+								scanIterator += doubleSymbol.size() + nbSeparators;
+								if(doubleSymbol == "->"){
+									doubleSymbol = "fleche";
+								}
+								return newLexicalUnit(doubleSymbol, 0, Terminal, doubleSymbol);	// if the double symbol isn't a string then we add it as a NonTerminal
 							}
-						}else{
-							scanIterator += doubleSymbol.size() + nbSeparators;
-							if(doubleSymbol == "->"){
-								doubleSymbol = "fleche";
-							}
-							return newLexicalUnit(doubleSymbol, 0, Terminal, doubleSymbol);	// if the double symbol isn't a string then we add it as a NonTerminal
-						}
 
-					}else{
-						symbols.push_back(string(1,currentChar)); // Cast Char to String				}
+						}else{
+							symbols.push_back(string(1,currentChar)); // Cast Char to String				}
+							scanIterator = i+1;
+							return newLexicalUnit(string(1,currentChar), 0, Terminal, string(1,currentChar));
+						}
+					}else if (isSymbol(currentChar)){
+						symbols.push_back(string(1,currentChar)); // Cast Char to String
 						scanIterator = i+1;
 						return newLexicalUnit(string(1,currentChar), 0, Terminal, string(1,currentChar));
-					}
-				}else if (isSymbol(currentChar)){
-					symbols.push_back(string(1,currentChar)); // Cast Char to String
-					scanIterator = i+1;
-					return newLexicalUnit(string(1,currentChar), 0, Terminal, string(1,currentChar));
 
-				}else if (isSeparator(currentChar)){
-					j = i;
-					while(isSeparator(toScan.at(j))){
-						separators.push_back(currentChar);
-						nbSeparators++;
-						++j;
+					}else if (isSeparator(currentChar)){
+						j = i;
+						while(isSeparator(toScan.at(j))){
+							separators.push_back(currentChar);
+							nbSeparators++;
+							++j;
+						}
 					}
+
+					scanIterator += unit.size() + nbSeparators;
+					return analyseUnit(unit);
+
+				}else{
+					unit += currentChar;
 				}
-
-				scanIterator += unit.size() + nbSeparators;
-				return analyseUnit(unit);
-
 			}else{
 				unit += currentChar;
 			}
-		}else{
-			unit += currentChar;
+
 		}
 
+		scanIterator += unit.size() + nbSeparators;
+		return analyseUnit(unit); // analyse the last unit found
 	}
 
-	scanIterator += unit.size() + nbSeparators;
-	return analyseUnit(unit); // analyse the last unit found
+	return NULL;
 }
 
 
@@ -317,32 +325,28 @@ void printLexicalErrors(){
 bool callAnalyzer(node* ptr){
 
 	// init the global string toScan from the file
-	// putFileIntoString("GPL.txt");
-	putFileIntoString("testGPL.txt");
+	putFileIntoString("GPL.txt");
+	// putFileIntoString("testGPL.txt");
 
 	// scan the first lexical unit
-
 	do{
 		lu = scanner();
 	}while(lu == NULL);
 
-
 	forest = buildForest();
 
 	return analyzer(ptr);
-
 }
 
 bool analyzer(node* ptr){
 
 	cout << "lexical unit : " << lu->chaine << endl;;
-	// add boolean
 
 	switch(ptr->op){
 
 		case Conc:
 			cout << "i'm here Conc" << endl;
-			// cout << "code de ptr actuel : " << ptr->typeNode.conc->left->op << endl;
+
 			if(analyzer(ptr->typeNode.conc->left)){
 				return analyzer(ptr->typeNode.conc->right);
 			}else{
@@ -371,8 +375,10 @@ bool analyzer(node* ptr){
 
 		case Un:
 			cout << "i'm here Un" << endl;
-			// add if
-			return analyzer(ptr->typeNode.un->son);
+			if(analyzer(ptr->typeNode.un->son)){
+				return analyzer(ptr->typeNode.un->son);
+			}
+			return true;
 		break;
 
 		case Atom:
@@ -384,12 +390,13 @@ bool analyzer(node* ptr){
 				case Terminal:
 					if(ptr->typeNode.atom->code == lu->code){
 						if (ptr->typeNode.atom->action != 0){
-							G0Action(ptr->typeNode.atom->action);
+							cout << "i made an action in Terminal" << endl;
+							G0Action(ptr->typeNode.atom->action, ptr->typeNode.atom->type);
 						}
 						cout << "Terminal code == chaine" << endl;
 						do{
 							lu = scanner();
-						}while(lu == NULL);
+						}while(lu == NULL && !isScanFinished);
 						return true;
 					}else{
 						cout << "Terminal code != chaine" << endl;
@@ -401,7 +408,9 @@ bool analyzer(node* ptr){
 					cout << "Non Terminal" << endl;
 					if (analyzer(forest[ptr->typeNode.atom->code])){
 						if (ptr->typeNode.atom->action != 0){
-							G0Action(ptr->typeNode.atom->action);
+							cout << "i made an action in NonTerminal" << endl;
+							G0Action(ptr->typeNode.atom->action, ptr->typeNode.atom->type);
+
 						}
 						return true;
 					}else{
@@ -415,62 +424,84 @@ bool analyzer(node* ptr){
 	return false; // probably to remove in the future
 }
 
-void G0Action(int action){
+void G0Action(int action, AtomType type){
 	node* T1;
 	node* T2;
+	cout << "action : " << action << endl;
 
 	switch(action){
 
 		case 1:
-			T1 = unstack();
-			T2 = unstack();
-			// what's this ?
-			// forest[T2->code + 5] = T1;
+			T1 = pile.top();
+			pile.pop();
+			cout << "code case 1 : " << T1->typeNode.atom->code << endl;
+			T2 = pile.top();
+			pile.pop();
+			forest[T2->typeNode.atom->code] = T1;
 		break;
 
 		case 2:
-			// what's this ? I'm probably wrong
-			stack(genAtom(lexicalTerminal[0]->chaine, 
-						  lexicalTerminal[0]->action, 
-						  lexicalTerminal[0]->type));
+			pile.push(genAtom(lu->chaine, 
+						  lu->action, 
+						  lu->type));
 		break;
 
 		case 3:			
-			T1 = unstack();
-			T2 = unstack();
-			stack(genUnion(T1,T2));
+			T1 = pile.top();
+			pile.pop();
+			cout << "code case 3 : " << T1->typeNode.atom->code << endl;
+			T2 = pile.top();
+			pile.pop();
+			pile.push(genUnion(T1,T2));
 		break;
 
 		case 4:
-			T1 = unstack();
-			T2 = unstack();
-			stack(genConc(T1,T2));
+			T1 = pile.top();
+			pile.pop();
+			cout << "code case 4 : " << T1->typeNode.atom->code << endl;
+			T2 = pile.top();
+			pile.pop();
+			pile.push(genConc(T1,T2));
 		break;
 
 		case 5:
-			// what's this ?
-			// if()
+
+			if(type == Terminal){
+				pile.push(genAtom(lu->chaine, 
+							  lu->action, 
+							  lu->type));
+			}else{
+				pile.push(genAtom(lu->chaine, 
+							  lu->action, 
+							  lu->type));
+			}
+
 		break;
 
 		case 6:
-			T1 = unstack();
-			stack(genStar(T1));
+			T1 = pile.top();
+			pile.pop();
+			pile.push(genStar(T1));
 		break;
 
 		case 7:
-			T1 = unstack();
-			stack(genUn(T1));
+			T1 = pile.top();
+			pile.pop();
+			pile.push(genUn(T1));
 		break;
 	}
 }
 
-void stack(node* tree){
-	pile.push_back(tree);
-}
+// void stack(node* tree){
+// 	pile.push_back(tree);
+// 	cout << "i stack : size is : " << pile.size() << endl;
+// }
 
-node* unstack(){
-	node* lastNode = pile[pile.size()-1];
-	pile.pop_back();
+// node* unstack(){
+// 	node* lastNode = pile[pile.size()-1];
+// 	pile.pop_back();
+// 	cout << "i unstack : size is : " << pile.size() << endl;
+// 	cout << lastNode->typeNode.atom->code << endl;
 
-	return lastNode;
-}
+// 	return lastNode;
+// }

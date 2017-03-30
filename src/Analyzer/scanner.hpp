@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <stack>
 #include <map>
 #include <fstream>
 #include "../enumerations.hpp"
@@ -15,7 +16,7 @@ struct lexical_unit{
 	string chaine;
 	int action;
 	AtomType type;
-	string code; // changer to string
+	string code;
 };
 
 void putFileIntoString(string filename);
@@ -38,8 +39,8 @@ void printLexicalErrors();
 
 bool callAnalyzer(node * ptr);
 bool analyzer(node* ptr);
-void G0Action(int action);
-void stack(node* tree);
-node* unstack();
+void G0Action(int action, AtomType type);
+// void stack(node* tree);
+// node* unstack();
 
 #endif // __SCANNER_HPP__
