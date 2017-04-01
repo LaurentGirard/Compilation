@@ -129,11 +129,11 @@ map<string,node*> buildForest(){
 	forest["N"] = A2;
 
 	node* A3 = genConc(
-		genAtom("T",3,NonTerminal), 
+		genAtom("T",0,NonTerminal), 
 		genStar( 
 			genConc(
 				genAtom("+", 0, Terminal),
-				genAtom("T",0,NonTerminal))));
+				genAtom("T",3,NonTerminal))));
 
 	forest["E"] = A3;
 
@@ -178,7 +178,7 @@ void printForest(map<string,node*> forest){
 	unsigned int i = 1;
 
 	for (map<string,node*>::iterator it=forest.begin(); it!=forest.end(); ++it){
-    	cout << "++++++++++ A" << i << " +++++++++"<< endl;
+    	cout << "++++++++++ A" << i << ": " << it->first << " +++++++++"<< endl;
     	printTree(it->second);
     	++i;
     }

@@ -108,9 +108,12 @@ int actionOfLexicalUnit(string unit){
 
 	string action;
 
+	if(isString(unit)){
+		unit = unit.substr(1, unit.size()-2);
+	}
+
 	for(int i = 0 ; i < unit.size() ; ++i){
 		action = unit.substr(i+1, unit.size()-1);
-
 		if (unit.at(i) == '#'){
 			if (isNumber(action)){
 				return atoi(action.c_str());
@@ -127,10 +130,21 @@ string rmActionFromLexicalUnit(string unit){
 
 	string unitWithoutAction = "";
 	unsigned int i = 0;
+	unsigned int endOfCheck = unit.size();
 
-	while( (unit.at(i) != '#') && (i < unit.size()) ){
+	if(isString(unit)){
+		i = 1;
+		endOfCheck = unit.size()-1;
+		unitWithoutAction += "\"";
+	}
+
+	while( (i < endOfCheck) && (unit.at(i) != '#') ){
 		unitWithoutAction += unit.at(i);
 		++i;
+	}
+
+	if(isString(unit)){
+		unitWithoutAction += "\"";
 	}
 
 	return unitWithoutAction;
@@ -163,7 +177,9 @@ lexical_unit* analyseUnit(string unit){
 			// find the action of a string if there is one (-2 for an error, -1 for a unit without code and the code otherwise)
 
 			if(isString(unit)){
-				return newLexicalUnit(unit, 0, Terminal, "ELTER");
+				cout << "unit : " << unit << " and action is " << action << endl;
+
+				return newLexicalUnit(rmActionFromLexicalUnit(unit), action, Terminal, "ELTER");
 			}else if (action == 0){
 				if (unit.at(0) == '\"'){
 					lexicalErrors.push_back(unit);
@@ -195,6 +211,7 @@ lexical_unit* scanner(){
 	bool isFillingString = false;
 	int nbSeparators = 0;
 	unsigned int j;
+	int action;
 
 	if(toScan.substr(scanIterator, toScan.size()).size() < 1){
 		isScanFinished = true;
@@ -217,9 +234,11 @@ lexical_unit* scanner(){
 
 			if(!isFillingString){
 				if(isSymbol(currentChar) || isSeparator(currentChar)){
-			// cout << "unit is : " << unit << endl;
 
+					action = actionOfLexicalUnit(unit);
 					if (isPotentialySymbolDouble(currentChar) && (i != toScan.size()-1)){
+
+
 						if (isSymbolDouble(currentChar, toScan.at(i+1))){
 							doubleSymbol = currentChar;
 							doubleSymbol += toScan.at(i+1);
@@ -229,7 +248,7 @@ lexical_unit* scanner(){
 								if(toScan.at(i+2) == '\"'){
 									newDoubleSymbol = "\"" + doubleSymbol +"\"";
 									scanIterator += newDoubleSymbol.size() + nbSeparators;
-									return newLexicalUnit(newDoubleSymbol, 0, Terminal, newDoubleSymbol);
+									return newLexicalUnit(rmActionFromLexicalUnit(newDoubleSymbol), action, Terminal, newDoubleSymbol);
 								}else{
 									newDoubleSymbol = "\"" + doubleSymbol;
 									scanIterator += newDoubleSymbol.size() + nbSeparators;
@@ -241,18 +260,18 @@ lexical_unit* scanner(){
 								if(doubleSymbol == "->"){
 									doubleSymbol = "fleche";
 								}
-								return newLexicalUnit(doubleSymbol, 0, Terminal, doubleSymbol);	// if the double symbol isn't a string then we add it as a NonTerminal
+								return newLexicalUnit(rmActionFromLexicalUnit(doubleSymbol), action, Terminal, doubleSymbol);	// if the double symbol isn't a string then we add it as a NonTerminal
 							}
 
 						}else{
 							symbols.push_back(string(1,currentChar)); // Cast Char to String				}
 							scanIterator = i+1;
-							return newLexicalUnit(string(1,currentChar), 0, Terminal, string(1,currentChar));
+							return newLexicalUnit(rmActionFromLexicalUnit(string(1,currentChar)), action, Terminal, string(1,currentChar));
 						}
 					}else if (isSymbol(currentChar)){
 						symbols.push_back(string(1,currentChar)); // Cast Char to String
 						scanIterator = i+1;
-						return newLexicalUnit(string(1,currentChar), 0, Terminal, string(1,currentChar));
+						return newLexicalUnit(rmActionFromLexicalUnit(string(1,currentChar)), action, Terminal, string(1,currentChar));
 
 					}else if (isSeparator(currentChar)){
 						j = i;
@@ -324,6 +343,7 @@ void printLexicalErrors(){
 
 bool callAnalyzer(node* ptr){
 
+	bool resultAnalyzer;
 	// init the global string toScan from the file
 	putFileIntoString("GPL.txt");
 	// putFileIntoString("testGPL.txt");
@@ -335,7 +355,11 @@ bool callAnalyzer(node* ptr){
 
 	forest = buildForest();
 
-	return analyzer(ptr);
+	printForest(forest);
+	resultAnalyzer = analyzer(ptr);
+	// printForest(forest);
+
+	return resultAnalyzer;
 }
 
 bool analyzer(node* ptr){
@@ -391,7 +415,7 @@ bool analyzer(node* ptr){
 					if(ptr->typeNode.atom->code == lu->code){
 						if (ptr->typeNode.atom->action != 0){
 							cout << "i made an action in Terminal" << endl;
-							G0Action(ptr->typeNode.atom->action, ptr->typeNode.atom->type);
+							G0Action(ptr->typeNode.atom->action);
 						}
 						cout << "Terminal code == chaine" << endl;
 						do{
@@ -409,8 +433,7 @@ bool analyzer(node* ptr){
 					if (analyzer(forest[ptr->typeNode.atom->code])){
 						if (ptr->typeNode.atom->action != 0){
 							cout << "i made an action in NonTerminal" << endl;
-							G0Action(ptr->typeNode.atom->action, ptr->typeNode.atom->type);
-
+							G0Action(ptr->typeNode.atom->action);
 						}
 						return true;
 					}else{
@@ -421,12 +444,12 @@ bool analyzer(node* ptr){
 		break;
 	}
 
-	return false; // probably to remove in the future
+	return false;
 }
 
-void G0Action(int action, AtomType type){
-	node* T1;
-	node* T2;
+void G0Action(int action){
+	node* T1 = NULL;
+	node* T2 = NULL;
 	cout << "action : " << action << endl;
 
 	switch(action){
@@ -434,23 +457,25 @@ void G0Action(int action, AtomType type){
 		case 1:
 			T1 = pile.top();
 			pile.pop();
-			cout << "code case 1 : " << T1->typeNode.atom->code << endl;
+			// cout << "code case 1 : " << T1->typeNode.atom->code << endl;
 			T2 = pile.top();
 			pile.pop();
 			forest[T2->typeNode.atom->code] = T1;
 		break;
 
 		case 2:
-			pile.push(genAtom(lu->chaine, 
-						  lu->action, 
-						  lu->type));
+			cout << "code case 2, I pushed : " << lu->chaine << endl;
+
+			pile.push(genAtom(lu->code, lu->action, lu->type));
 		break;
 
 		case 3:			
 			T1 = pile.top();
 			pile.pop();
-			cout << "code case 3 : " << T1->typeNode.atom->code << endl;
 			T2 = pile.top();
+			// cout << "code case 3 : " << T1->typeNode.atom->code << endl;
+			// cout << "code case 3 : " << T2->typeNode.atom->code << endl;
+
 			pile.pop();
 			pile.push(genUnion(T1,T2));
 		break;
@@ -458,24 +483,18 @@ void G0Action(int action, AtomType type){
 		case 4:
 			T1 = pile.top();
 			pile.pop();
-			cout << "code case 4 : " << T1->typeNode.atom->code << endl;
 			T2 = pile.top();
 			pile.pop();
+			// cout << "code case 4 : " << T1->typeNode.atom->code << endl;
+			// cout << "code case 4 : " << T2->typeNode.atom->code << endl;
+
 			pile.push(genConc(T1,T2));
 		break;
 
 		case 5:
+			cout << "code case 5, I pushed : " << lu->chaine << endl;
 
-			if(type == Terminal){
-				pile.push(genAtom(lu->chaine, 
-							  lu->action, 
-							  lu->type));
-			}else{
-				pile.push(genAtom(lu->chaine, 
-							  lu->action, 
-							  lu->type));
-			}
-
+			pile.push(genAtom(lu->code, lu->action, lu->type));
 		break;
 
 		case 6:
@@ -490,18 +509,7 @@ void G0Action(int action, AtomType type){
 			pile.push(genUn(T1));
 		break;
 	}
+
+	delete(T1);
+	delete(T2);
 }
-
-// void stack(node* tree){
-// 	pile.push_back(tree);
-// 	cout << "i stack : size is : " << pile.size() << endl;
-// }
-
-// node* unstack(){
-// 	node* lastNode = pile[pile.size()-1];
-// 	pile.pop_back();
-// 	cout << "i unstack : size is : " << pile.size() << endl;
-// 	cout << lastNode->typeNode.atom->code << endl;
-
-// 	return lastNode;
-// }

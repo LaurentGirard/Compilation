@@ -9,12 +9,12 @@ int main(){
 
 	// putFileIntoString("GPL.txt");
 
-	map<string,node*> forest = buildForest();
+	map<string,node*> forest2 = buildForest();
 	// printForest(forest);
 
 	// lexical_unit* lu = scanner();
 	
-	bool analyzer = callAnalyzer(forest["S"]);
+	bool analyzer = callAnalyzer(forest2["S"]);
 
 	cout << "ça a marché : " << analyzer << endl;
 	cout << "------------------------------------" << endl;

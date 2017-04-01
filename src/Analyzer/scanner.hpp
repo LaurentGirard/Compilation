@@ -39,8 +39,6 @@ void printLexicalErrors();
 
 bool callAnalyzer(node * ptr);
 bool analyzer(node* ptr);
-void G0Action(int action, AtomType type);
-// void stack(node* tree);
-// node* unstack();
+void G0Action(int action);
 
 #endif // __SCANNER_HPP__
