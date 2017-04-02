@@ -357,8 +357,8 @@ bool callAnalyzer(node* ptr){
 
 	printForest(forest);
 	resultAnalyzer = analyzer(ptr);
-	// printForest(forest);
 
+	printForest(forest);
 	return resultAnalyzer;
 }
 
@@ -448,36 +448,31 @@ bool analyzer(node* ptr){
 }
 
 void G0Action(int action){
-	node* T1 = NULL;
-	node* T2 = NULL;
-	cout << "action : " << action << endl;
+	node* T1 = new node();
+	node* T2 = new node();
 
 	switch(action){
 
 		case 1:
 			T1 = pile.top();
 			pile.pop();
-			// cout << "code case 1 : " << T1->typeNode.atom->code << endl;
 			T2 = pile.top();
 			pile.pop();
+
 			forest[T2->typeNode.atom->code] = T1;
 		break;
 
 		case 2:
-			cout << "code case 2, I pushed : " << lu->chaine << endl;
-
-			pile.push(genAtom(lu->code, lu->action, lu->type));
+			pile.push(genAtom(lu->chaine, lu->action, lu->type));
 		break;
 
 		case 3:			
 			T1 = pile.top();
 			pile.pop();
 			T2 = pile.top();
-			// cout << "code case 3 : " << T1->typeNode.atom->code << endl;
-			// cout << "code case 3 : " << T2->typeNode.atom->code << endl;
-
+			
 			pile.pop();
-			pile.push(genUnion(T1,T2));
+			pile.push(genUnion(T2,T1));
 		break;
 
 		case 4:
@@ -485,16 +480,12 @@ void G0Action(int action){
 			pile.pop();
 			T2 = pile.top();
 			pile.pop();
-			// cout << "code case 4 : " << T1->typeNode.atom->code << endl;
-			// cout << "code case 4 : " << T2->typeNode.atom->code << endl;
 
-			pile.push(genConc(T1,T2));
+			pile.push(genConc(T2,T1));
 		break;
 
 		case 5:
-			cout << "code case 5, I pushed : " << lu->chaine << endl;
-
-			pile.push(genAtom(lu->code, lu->action, lu->type));
+			pile.push(genAtom(lu->chaine, lu->action, lu->type));
 		break;
 
 		case 6:
@@ -509,7 +500,4 @@ void G0Action(int action){
 			pile.push(genUn(T1));
 		break;
 	}
-
-	delete(T1);
-	delete(T2);
 }
