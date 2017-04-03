@@ -1,7 +1,6 @@
 #include "scanner.hpp"
 #include "../Forest/forest.hpp"
 
-map<string,node*> forest;
 
 vector<char> separators;
 vector<string> symbols;
@@ -353,16 +352,16 @@ bool callAnalyzer(node* ptr){
 		lu = scanner();
 	}while(lu == NULL);
 
-	forest = buildForest();
+	map<string,node*> forest = buildForest();
 
 	printForest(forest);
-	resultAnalyzer = analyzer(ptr);
+	resultAnalyzer = analyzer(ptr, forest);
 
 	printForest(forest);
 	return resultAnalyzer;
 }
 
-bool analyzer(node* ptr){
+bool analyzer(node* ptr, map<string,node*> &forest){
 
 	cout << "lexical unit : " << lu->chaine << endl;;
 
@@ -371,8 +370,8 @@ bool analyzer(node* ptr){
 		case Conc:
 			cout << "i'm here Conc" << endl;
 
-			if(analyzer(ptr->typeNode.conc->left)){
-				return analyzer(ptr->typeNode.conc->right);
+			if(analyzer(ptr->typeNode.conc->left, forest)){
+				return analyzer(ptr->typeNode.conc->right, forest);
 			}else{
 				cout << "Conc false" << endl;
 				return false;
@@ -383,24 +382,24 @@ bool analyzer(node* ptr){
 		case Union:
 			cout << "i'm here Union" << endl;
 
-			if (analyzer(ptr->typeNode.unio->left)){
+			if (analyzer(ptr->typeNode.unio->left, forest)){
 				return true;
 			}else{
-				return analyzer(ptr->typeNode.unio->right);
+				return analyzer(ptr->typeNode.unio->right, forest);
 			}
 		break;
 
 		case Star:
 			cout << "i'm here star" << endl;
-			while (analyzer(ptr->typeNode.star->son)){
+			while (analyzer(ptr->typeNode.star->son, forest)){
 			}	
 			return true;
 		break;
 
 		case Un:
 			cout << "i'm here Un" << endl;
-			if(analyzer(ptr->typeNode.un->son)){
-				return analyzer(ptr->typeNode.un->son);
+			if(analyzer(ptr->typeNode.un->son, forest)){
+				return analyzer(ptr->typeNode.un->son, forest);
 			}
 			return true;
 		break;
@@ -415,7 +414,7 @@ bool analyzer(node* ptr){
 					if(ptr->typeNode.atom->code == lu->code){
 						if (ptr->typeNode.atom->action != 0){
 							cout << "i made an action in Terminal" << endl;
-							G0Action(ptr->typeNode.atom->action);
+							G0Action(ptr->typeNode.atom->action, forest);
 						}
 						cout << "Terminal code == chaine" << endl;
 						do{
@@ -430,10 +429,10 @@ bool analyzer(node* ptr){
 
 				case NonTerminal:
 					cout << "Non Terminal" << endl;
-					if (analyzer(forest[ptr->typeNode.atom->code])){
+					if (analyzer(forest[ptr->typeNode.atom->code], forest)){
 						if (ptr->typeNode.atom->action != 0){
 							cout << "i made an action in NonTerminal" << endl;
-							G0Action(ptr->typeNode.atom->action);
+							G0Action(ptr->typeNode.atom->action, forest);
 						}
 						return true;
 					}else{
@@ -447,7 +446,7 @@ bool analyzer(node* ptr){
 	return false;
 }
 
-void G0Action(int action){
+void G0Action(int action, map<string,node*> &forest){
 	node* T1 = new node();
 	node* T2 = new node();
 

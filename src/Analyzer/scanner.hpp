@@ -38,7 +38,7 @@ void printLexicalUnits(string lexicalType);
 void printLexicalErrors();
 
 bool callAnalyzer(node * ptr);
-bool analyzer(node* ptr);
-void G0Action(int action);
+bool analyzer(node* ptr, map<string,node*> &forest);
+void G0Action(int action, map<string,node*> &forest);
 
 #endif // __SCANNER_HPP__
