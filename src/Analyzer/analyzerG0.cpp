@@ -1,6 +1,4 @@
-#include "scanner.hpp"
-#include "../Forest/forest.hpp"
-
+#include "analyzerG0.hpp"
 
 vector<char> separators;
 vector<string> symbols;
@@ -11,143 +9,12 @@ vector<lexical_unit*> lexicalNonTerminal;
 
 stack<node*> pile;
 
-string toScan;
+string toScanGPL;
 lexical_unit* lu;
 
 unsigned int scanIterator = 0;
 bool isScanFinished = false;
 
-void putFileIntoString(string filename){
-
-	ifstream in(filename);
-	string toString((istreambuf_iterator<char>(in)), istreambuf_iterator<char>());
-
-	toScan = toString;
-}
-
-bool isSeparator(char charac){
-
-	return (charac == ' ' || charac == '	' || charac == '\n');
-}
-
-bool isSymbol(char charac){
-
-	return (charac == '+' || charac == '-' || charac == '=' || charac == '*' || charac == '&' || charac == '|' || charac == '/' || 
-			charac == '^' || charac == '(' || charac == ')' || charac == '[' || charac == ']' || charac == '{' || charac == '}' ||
-			charac == ';' || charac == ':' || charac == ',' || charac == '<' || charac == '>' || charac == '\''|| charac == '@' || 
-			charac == '!' || charac == '?' || charac == '.');
-
-}
-
-bool isPotentialySymbolDouble(char charac){
-	return (charac == '=' || charac == '|' || charac == '&' || charac == '<' || 
-			charac == '>' || charac == ':' || charac == '+' ||
-			charac == '-' || charac == '!');
-
-}
-
-bool isSymbolDouble(char firstChar, char secondChar){
-	switch(firstChar){
-		case '=':
-			return(secondChar == '=');
-		break;
-		case '|':
-			return(secondChar == '|');
-		break;
-		case '&':
-			return (secondChar == '&');
-		break;
-		case '<':
-			return(secondChar == '<' || secondChar == '=');
-		break;
-		case '>':
-			return(secondChar == '>' || secondChar == '=');
-		break;
-		case ':':
-			return(secondChar == ':');
-		break;
-		case '+':
-			return(secondChar == '+' || secondChar == '=');
-		break;
-		case '-':
-			return(secondChar == '-' || secondChar == '=' || secondChar == '>');
-		break;
-		case '!':
-			return(secondChar == '=');
-		break;
-	}
-
-	return false;
-}
-
-bool isInteger(char charac){
-	return (charac == '0' || charac == '1' || charac == '2' || charac == '3' || charac == '4' || 
-			charac == '5' || charac == '6' || charac == '7' || charac == '8' || charac == '9');
-}
-
-bool isNumber(string unit){
-
-	for (int i = 0; i < unit.size(); ++i){
-		if (!isInteger(unit.at(i))){
-			return false;
-		}
-	}
-
-	return true;
-}
-
-bool isString(string unit){
-
-	return (unit.size() > 1 && 
-			unit.at(0) == '\"' && 
-			unit.at(unit.size()-1) == '\"');
-}
-
-int actionOfLexicalUnit(string unit){
-
-	string action;
-
-	if(isString(unit)){
-		unit = unit.substr(1, unit.size()-2);
-	}
-
-	for(int i = 0 ; i < unit.size() ; ++i){
-		action = unit.substr(i+1, unit.size()-1);
-		if (unit.at(i) == '#'){
-			if (isNumber(action)){
-				return atoi(action.c_str());
-			}else{
-				return -2;
-			}
-		}
-	}
-
-	return 0;
-}
-
-string rmActionFromLexicalUnit(string unit){
-
-	string unitWithoutAction = "";
-	unsigned int i = 0;
-	unsigned int endOfCheck = unit.size();
-
-	if(isString(unit)){
-		i = 1;
-		endOfCheck = unit.size()-1;
-		unitWithoutAction += "\"";
-	}
-
-	while( (i < endOfCheck) && (unit.at(i) != '#') ){
-		unitWithoutAction += unit.at(i);
-		++i;
-	}
-
-	if(isString(unit)){
-		unitWithoutAction += "\"";
-	}
-
-	return unitWithoutAction;
-}
 
 lexical_unit* newLexicalUnit(string chaine, int action, AtomType type, string code){
 
@@ -202,7 +69,7 @@ lexical_unit* analyseUnit(string unit){
 
 lexical_unit* scanner(){
 
-	// cout << "i have to scan this : " << toScan.substr(scanIterator, toScan.size()) << endl;
+	// cout << "i have to scan this : " << toScanGPL.substr(scanIterator, toScanGPL.size()) << endl;
 
 	string unit = "";
 	char currentChar;
@@ -212,12 +79,12 @@ lexical_unit* scanner(){
 	unsigned int j;
 	int action;
 
-	if(toScan.substr(scanIterator, toScan.size()).size() < 1){
+	if(toScanGPL.substr(scanIterator, toScanGPL.size()).size() < 1){
 		isScanFinished = true;
 		return NULL;
 	}else{
-		for(int i = scanIterator ; i < toScan.size() ; ++i){
-			currentChar = toScan.at(i);
+		for(int i = scanIterator ; i < toScanGPL.size() ; ++i){
+			currentChar = toScanGPL.at(i);
 			// cout << "currentchar is : " << currentChar << endl;
 			// Construction d'une chaine de caractère
 			if(currentChar == '\"'){
@@ -235,16 +102,16 @@ lexical_unit* scanner(){
 				if(isSymbol(currentChar) || isSeparator(currentChar)){
 
 					action = actionOfLexicalUnit(unit);
-					if (isPotentialySymbolDouble(currentChar) && (i != toScan.size()-1)){
+					if (isPotentialySymbolDouble(currentChar) && (i != toScanGPL.size()-1)){
 
 
-						if (isSymbolDouble(currentChar, toScan.at(i+1))){
+						if (isSymbolDouble(currentChar, toScanGPL.at(i+1))){
 							doubleSymbol = currentChar;
-							doubleSymbol += toScan.at(i+1);
+							doubleSymbol += toScanGPL.at(i+1);
 
 							if(unit != "" && unit.at(0) == '\"'){
 
-								if(toScan.at(i+2) == '\"'){
+								if(toScanGPL.at(i+2) == '\"'){
 									newDoubleSymbol = "\"" + doubleSymbol +"\"";
 									scanIterator += newDoubleSymbol.size() + nbSeparators;
 									return newLexicalUnit(rmActionFromLexicalUnit(newDoubleSymbol), action, Terminal, newDoubleSymbol);
@@ -274,7 +141,7 @@ lexical_unit* scanner(){
 
 					}else if (isSeparator(currentChar)){
 						j = i;
-						while(isSeparator(toScan.at(j))){
+						while(isSeparator(toScanGPL.at(j))){
 							separators.push_back(currentChar);
 							nbSeparators++;
 							++j;
@@ -340,24 +207,20 @@ void printLexicalErrors(){
 // ------------------------------------------
 // Analyseur
 
-bool callAnalyzer(node* ptr){
+bool callAnalyzer(map<string,node*> &forest){
 
 	bool resultAnalyzer;
-	// init the global string toScan from the file
-	putFileIntoString("GPL.txt");
-	// putFileIntoString("testGPL.txt");
+
+	// init the global string toScanGPL from the file
+	toScanGPL = putFileIntoString("GPL.txt");
 
 	// scan the first lexical unit
 	do{
 		lu = scanner();
 	}while(lu == NULL);
 
-	map<string,node*> forest = buildForest();
+	resultAnalyzer = analyzer(forest["S"], forest);
 
-	printForest(forest);
-	resultAnalyzer = analyzer(ptr, forest);
-
-	printForest(forest);
 	return resultAnalyzer;
 }
 

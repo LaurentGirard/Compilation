@@ -1,5 +1,5 @@
-#ifndef __SCANNER_HPP__
-#define __SCANNER_HPP__
+#ifndef __TOOLS_HPP__
+#define __TOOLS_HPP__
 
 #include <iostream>
 #include <string>
@@ -19,7 +19,7 @@ struct lexical_unit{
 	string code;
 };
 
-void putFileIntoString(string filename);
+string putFileIntoString(string filename);
 
 bool isSeparator(char charac);
 bool isSymbol(char charac);
@@ -30,15 +30,9 @@ bool isNumber(string unit);
 bool isString(string unit);
 int actionOfLexicalUnit(string unit);
 string rmActionFromLexicalUnit(string unit);
-lexical_unit* newLexicalUnit(string chaine, int action, AtomType type, Code code);
-lexical_unit* analyseUnit(string unit);
-lexical_unit* scanner();
+
 void printLexicalUnit(lexical_unit* lu);
 void printLexicalUnits(string lexicalType);
 void printLexicalErrors();
 
-bool callAnalyzer(node * ptr);
-bool analyzer(node* ptr, map<string,node*> &forest);
-void G0Action(int action, map<string,node*> &forest);
-
-#endif // __SCANNER_HPP__
+#endif // __TOOLS_HPP__

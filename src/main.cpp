@@ -1,22 +1,17 @@
 #include <iostream>
 #include <string>
 
-#include "Forest/forest.hpp"
-#include "Analyzer/scanner.hpp"
-#include "Analyzer/analyzer.hpp"
+#include "Analyzer/analyzerG0.hpp"
 
 int main(){
 
-	// putFileIntoString("GPL.txt");
-
-	map<string,node*> forest2 = buildForest();
-	// printForest(forest);
-
-	// lexical_unit* lu = scanner();
+	map<string,node*> forest = buildForest();
 	
-	bool analyzer = callAnalyzer(forest2["S"]);
+	bool analyzer = callAnalyzer(forest);
 
-	cout << "ça a marché : " << analyzer << endl;
+	printForest(forest);
+
+	cout << "Result : " << analyzer << endl;
 	cout << "------------------------------------" << endl;
 	
 	// cout << "Lexical units Terminal" << endl;
