@@ -10,7 +10,7 @@ CXXFLAGS=-std=c++0x -Ofast -W -Wall -Wextra -pedantic -Wno-sign-compare -Wno-unu
 LFLAGS=$(IDIRFLAG)
 
 # Directories
-SRCDIR= src src/Analyzer src/Forest
+SRCDIR= src src/Analyzer src/Forest src/PCode
 OBJDIR=obj
 BINDIR=bin
 
