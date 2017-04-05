@@ -19,7 +19,7 @@ int main(){
 	analyzer = callAnalyzerGPL(forest);
 
 	cout << "Result : " << analyzer << endl;
-	cout << "------------------------------------" << endl;
+	
 
 	printPCODE();
 
@@ -32,8 +32,6 @@ int main(){
 	initPile(getPCODE(),getPILEX());
 
 	execPcode();
-	cout << "k" << endl;
-	
 
 	// cout << "Lexical units Terminal" << endl;
 	// printLexicalUnits("lexicalTerminal");

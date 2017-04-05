@@ -556,7 +556,7 @@ bool callAnalyzerGPL(map<string,node*> forest){
 
 
 	// init the global string toScanProgram from the file
-	toScanProgram = putFileIntoString("Program.txt");
+	toScanProgram = putFileIntoString("programs/prog_4.txt");
 
 	// scan the first lexical unit
 	do{
@@ -657,8 +657,6 @@ bool analyzerGPL(node* ptr, map<string,node*> forest){
 void GPLAction(int action, node* ptr){
 
 	int i;
-	cout << "DANS GPL ACTION :------------------------------------------------------------------------------*-/*/*/*/*/*/*/*/" << endl;
-	cout << action << endl;
 	switch(action){
 
 		// Déclaration d'un identificateur
@@ -769,8 +767,6 @@ void GPLAction(int action, node* ptr){
         case 14:
             p_code.push_back(JIF);
             p_code.push_back(-9999);
-            cout << "KEKEKEKEKEK ----------------------------------------------------------- EKKEKEKEKEKEKKEKE " << endl;
-            cout << p_code.size()-1 << endl;
             pilex.push_back(p_code.size()-1);
             break;
 
@@ -856,9 +852,11 @@ void GPLAction(int action, node* ptr){
 
 void printPCODE(){
 	int i;
+	cout << "---------------Pile P_CODE-----------------" << endl;
 	for (i = 0; i < p_code.size() ; i++) {
 		cout << p_code[i] << endl;
 	}
+	cout << "-------------------------------------------" << endl;
 }
 
 vector<int> getPCODE(){

@@ -1,0 +1,12 @@
+Program cours ;
+var I , S , N ;
+BEGIN
+    Read N ;
+    S = 0 ;
+    I = 1 ;
+    WHILE I <= N DO
+        S = S + I ;
+        I = I + 1 ;
+    ENDWHILE
+    Writeln S ;
+END .

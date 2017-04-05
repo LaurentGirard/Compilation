@@ -1,0 +1,12 @@
+Program factorielle ;
+var N , I , S ;
+BEGIN
+    Read N ;
+    I = 1 ;
+    S = 1 ;
+    WHILE I <= N DO
+        S = S * I ;
+        I = I + 1 ;
+    ENDWHILE
+    Writeln S ;
+END .

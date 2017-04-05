@@ -1,0 +1,10 @@
+Program nfois ;
+var N , I ;
+BEGIN
+    Read N ;
+    I = 1 ;
+    WHILE I <= N DO
+        Writeln N ;
+        I = I + 1 ;
+    ENDWHILE
+END .
