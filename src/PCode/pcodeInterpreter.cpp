@@ -36,12 +36,12 @@ void interpret(int instr) {
 			break;
 
 			case JIF: 
- 				if ( pileX[spx] == 0 ){
-					c0 = pcode[c0+1];
-				} else {
+ 				if ( pileX[spx] == 1 ){
 					c0 = c0+2;
+				} else {
+					c0 = pcode[c0+1];
 				}
-				//spx = spx -1;
+				// spx = spx -1;
 
 			break;
 
@@ -257,5 +257,9 @@ void initPile(vector<int> pcodepile, vector<int> pileXpile) {
 	pileX = pileXpile;
 	c0 = 0;
 	spx = pileX.size()-1;
+
+	for(int i = 0 ; i < 100 ; ++i){
+		pileX.push_back(-10000);
+	}
 
 }

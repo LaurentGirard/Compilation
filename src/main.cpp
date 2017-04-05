@@ -29,11 +29,8 @@ int main(){
 	// int pcodePile[] = {LDA,2,RD,AFF,LDA,1,LDC,0,AFF,LDA,0,LDC,1,AFF,LDV,0,LDV,2,INFE,JIF,37,LDA,1,LDV,1,LDV,0,ADD,AFF,LDA,0,LDV,0,INC,AFF,JMP,14,LDV,1,WRTLN,STOP};
 	// int pileXpile[] = {0,0,0};
 
-	// vector<int> pile1 (pcodePile, pcodePile + sizeof(pcodePile) / sizeof(int));
-	// vector<int> pile2 (pileXpile, pileXpile + sizeof(pileXpile) / sizeof(int));
-
 	initPile(getPCODE(),getPILEX());
-	//initPile(pile1,pile2);
+
 	execPcode();
 	cout << "k" << endl;
 	
