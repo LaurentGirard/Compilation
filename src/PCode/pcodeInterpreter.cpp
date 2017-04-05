@@ -190,7 +190,7 @@ void interpret(int instr) {
 
 			break;
 
-			case DEL: 
+			case DEC: 
 				pileX[spx] = pileX[spx]-1;
 				c0 = c0+1;
 			break;
