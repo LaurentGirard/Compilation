@@ -41,7 +41,7 @@ void interpret(int instr) {
 				} else {
 					c0 = c0+2;
 				}
-				spx = spx -1;
+				//spx = spx -1;
 
 			break;
 
@@ -63,6 +63,7 @@ void interpret(int instr) {
 
 			case RDLN: 
 				spx = spx + 1;
+				cout << "Veuillez entrer votre valeur." << endl;
 				cin >> tmp;
 				cout <<"\n";
 				pileX[spx] = tmp;
@@ -96,61 +97,67 @@ void interpret(int instr) {
 	/*----OperatorsREL-------*/
 			case SUP: 
 				if (pileX[spx-1] > pileX[spx]) {
-					pileX[spx-1] = 1;
+					spx++;
+					pileX[spx] = 1;
 				} else {
-					pileX[spx-1] = 0;
+					spx++;
+					pileX[spx] = 0;
 				}
-				spx = spx-1;
 				c0 = c0+1;
 			break;
 
 			case SUPE: 
 				if (pileX[spx-1] >= pileX[spx]) {
-					pileX[spx-1] = 1;
+					spx++;
+					pileX[spx] = 1;
 				} else {
-					pileX[spx-1] = 0;
+					spx++;
+					pileX[spx] = 0;
 				}
-				spx = spx-1;
 				c0 = c0+1;
 			break;
 
 			case INF: 
 				if (pileX[spx-1] < pileX[spx]) {
-					pileX[spx-1] = 1;
+					spx++;
+					pileX[spx] = 1;
 				} else {
-					pileX[spx-1] = 0;
+					spx++;
+					pileX[spx] = 0;
 				}
-				spx = spx-1;
 				c0 = c0+1;
 			break;
 
 			case INFE: 
 				if (pileX[spx-1] <= pileX[spx]) {
-					pileX[spx-1] = 1;
+					spx++;
+					pileX[spx] = 1;
 				} else {
-					pileX[spx-1] = 0;
+					spx++;
+					pileX[spx] = 0;
 				}
-				spx = spx-1;
 				c0 = c0+1;
 			break;
 
 			case EG: 
 				if (pileX[spx-1] == pileX[spx]) {
-					pileX[spx-1] = 1;
+					spx++;
+					pileX[spx] = 1;
 				} else {
-					pileX[spx-1] = 0;
+					spx++;
+					pileX[spx] = 0;
 				}
-				spx = spx-1;
 				c0 = c0+1;
 			break;
 
 			case DIFF: 
 				if (pileX[spx-1] != pileX[spx]) {
-					pileX[spx-1] = 1;
+					spx++;
+					pileX[spx] = 1;
 				} else {
-					pileX[spx-1] = 0;
+					spx++;
+					pileX[spx] = 0;
 				}
-				spx = spx-1;
 				c0 = c0+1;
 			break;
 
@@ -193,6 +200,39 @@ void interpret(int instr) {
 			case DEC: 
 				pileX[spx] = pileX[spx]-1;
 				c0 = c0+1;
+			break;
+
+			case AND: 
+				if (pileX[spx-3] == 1 && pileX[spx] == 1) {
+                spx++;
+                pileX[spx] = 1;
+            } else {
+                spx++;
+                pileX[spx] = 0;
+            }
+            c0++;
+			break;
+
+			case OR: 
+				if (pileX[spx-3] == 1 || pileX[spx] == 1) {
+                spx++;
+                pileX[spx] = 1;
+            } else {
+                spx++;
+                pileX[spx] = 0;
+            }
+            c0++;
+			break;
+
+			case NOT: 
+				if (pileX[spx] == 0) {
+                spx++;
+                pileX[spx] = 1;
+            } else {
+                spx++;
+                pileX[spx] = 0;
+            }
+            c0++;
 			break;
 
 			default: 

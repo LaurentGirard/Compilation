@@ -657,8 +657,8 @@ bool analyzerGPL(node* ptr, map<string,node*> forest){
 void GPLAction(int action, node* ptr){
 
 	int i;
-
-
+	cout << "DANS GPL ACTION :------------------------------------------------------------------------------*-/*/*/*/*/*/*/*/" << endl;
+	cout << action << endl;
 	switch(action){
 
 		// Déclaration d'un identificateur
@@ -670,6 +670,7 @@ void GPLAction(int action, node* ptr){
 		// Donner une valeur à un identificateur
 		case 2:
 			pilex.push_back(stoi(valeurEntier));
+			cout << valeurEntier << endl;
 			valeurEntier = "";
 		break;
 
@@ -690,8 +691,9 @@ void GPLAction(int action, node* ptr){
 		// Charger une constante LDC + i
 		case 5:
 			i = indexIdentPileX[luProgram->chaine];
-			p_code.push_back(LDV);
-			p_code.push_back(i);
+			p_code.push_back(LDC);
+			p_code.push_back(stoi(valeurEntier));
+			valeurEntier ="";
 		break;
 
 		// identifier opérateur mathématique (ADD,SUB ect)
@@ -763,10 +765,12 @@ void GPLAction(int action, node* ptr){
             }
             break;
 
-        // Premiere partie d'un JIF (IF) (chargé le JIF + l'adresse laissée vide pour jump si faux) (20)
+        // Premiere partie d'un JIF (IF) (charger le JIF + l'adresse laissée vide pour jump si faux) (20)
         case 14:
             p_code.push_back(JIF);
             p_code.push_back(-9999);
+            cout << "KEKEKEKEKEK ----------------------------------------------------------- EKKEKEKEKEKEKKEKE " << endl;
+            cout << p_code.size()-1 << endl;
             pilex.push_back(p_code.size()-1);
             break;
 
@@ -776,7 +780,7 @@ void GPLAction(int action, node* ptr){
             p_code[pilex[pilex.size()-2]] = p_code.size();
             break;
 
-        // Troisieme partie d'un JIF (THEN) (mettre un JMP pour sauté après le else) (22)
+        // Troisieme partie d'un JIF (THEN) (mettre un JMP pour sauter après le else) (22)
         case 16:
             //std::cout << "Troisieme partie d'un JIF (THEN)" << '\n';
             p_code.push_back(JMP);
@@ -797,7 +801,8 @@ void GPLAction(int action, node* ptr){
             //std::cout << "Pour le while, JMP pour revenir au début du while" << '\n';
             p_code.push_back(JMP);
             p_code[pilex.back()] = p_code.size()+1;
-            p_code.push_back(pilex.back());;
+            pilex.pop_back();
+            p_code.push_back(pilex.back());
             pilex.pop_back();
             break;
 

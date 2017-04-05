@@ -33,7 +33,9 @@ int main(){
 	// vector<int> pile2 (pileXpile, pileXpile + sizeof(pileXpile) / sizeof(int));
 
 	initPile(getPCODE(),getPILEX());
+	//initPile(pile1,pile2);
 	execPcode();
+	cout << "k" << endl;
 	
 
 	// cout << "Lexical units Terminal" << endl;
