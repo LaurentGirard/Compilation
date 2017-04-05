@@ -144,6 +144,6 @@ string rmActionFromLexicalUnit(string unit){
 }
 
 string rmQuoteFromLexicalUnit(string unit){
-	
+
 	return unit.substr(1, unit.size()-2);
 }

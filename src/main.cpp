@@ -1,8 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "Analyzer/analyzerG0.hpp"
-#include "Analyzer/analyzerGPL.hpp"
+#include "Analyzer/analyzer.hpp"
 #include "PCode/pcodeInterpreter.hpp"
 
 int main(){
