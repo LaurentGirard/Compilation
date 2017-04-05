@@ -30,9 +30,6 @@ bool isNumber(string unit);
 bool isString(string unit);
 int actionOfLexicalUnit(string unit);
 string rmActionFromLexicalUnit(string unit);
-
-void printLexicalUnit(lexical_unit* lu);
-void printLexicalUnits(string lexicalType);
-void printLexicalErrors();
+string rmQuoteFromLexicalUnit(string unit);
 
 #endif // __TOOLS_HPP__

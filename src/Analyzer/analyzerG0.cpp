@@ -45,7 +45,7 @@ lexical_unit* analyseUnit(string unit){
 			if(isString(unit)){
 				cout << "unit : " << unit << " and action is " << action << endl;
 
-				return newLexicalUnit(rmActionFromLexicalUnit(unit), action, Terminal, "ELTER");
+				return newLexicalUnit(rmQuoteFromLexicalUnit(rmActionFromLexicalUnit(unit)), action, Terminal, "ELTER");
 			}else if (action == 0){
 				if (unit.at(0) == '\"'){
 					lexicalErrors.push_back(unit);
@@ -85,7 +85,6 @@ lexical_unit* scanner(){
 	}else{
 		for(int i = scanIterator ; i < toScanGPL.size() ; ++i){
 			currentChar = toScanGPL.at(i);
-			// cout << "currentchar is : " << currentChar << endl;
 			// Construction d'une chaine de caractère
 			if(currentChar == '\"'){
 
@@ -205,8 +204,7 @@ void printLexicalErrors(){
 
 
 // ------------------------------------------
-// Analyseur
-
+// AnalyseurGPL
 bool callAnalyzer(map<string,node*> &forest){
 
 	bool resultAnalyzer;

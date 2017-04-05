@@ -27,10 +27,11 @@ bool isSymbol(char charac){
 }
 
 bool isPotentialySymbolDouble(char charac){
-	return (charac == '=' || charac == '|' || charac == '&' || charac == '<' || 
-			charac == '>' || charac == ':' || charac == '+' ||
-			charac == '-' || charac == '!');
-
+	return (
+		charac == '=' || charac == '|' || charac == '&' || 
+		charac == '<' || charac == '>' || charac == ':' || 
+		charac == '+' || charac == '-' || charac == '!' || 
+		charac == '(' || charac == '/');
 }
 
 bool isSymbolDouble(char firstChar, char secondChar){
@@ -61,6 +62,12 @@ bool isSymbolDouble(char firstChar, char secondChar){
 		break;
 		case '!':
 			return(secondChar == '=');
+		break;
+		case '(':
+			return(secondChar == '/');
+		break;
+		case '/':
+			return(secondChar == ')');
 		break;
 	}
 
@@ -134,4 +141,9 @@ string rmActionFromLexicalUnit(string unit){
 	}
 
 	return unitWithoutAction;
+}
+
+string rmQuoteFromLexicalUnit(string unit){
+	
+	return unit.substr(1, unit.size()-2);
 }
