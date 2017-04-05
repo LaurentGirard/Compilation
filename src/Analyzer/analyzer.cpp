@@ -15,6 +15,14 @@ lexical_unit* lu;
 unsigned int scanIterator = 0;
 bool isScanFinished = false;
 
+map<string, int> indexIdentPileX;
+vector<int> p_code;
+vector<int> pilex;
+
+string valeurEntier = "";
+string valeurOperateur = "";
+string valeurOperateurMath ="";
+
 
 //---------------------------------------------------
 // GPL Part
@@ -614,7 +622,7 @@ bool analyzerGPL(node* ptr, map<string,node*> forest){
 					if(ptr->typeNode.atom->code == luProgram->code){
 						if (ptr->typeNode.atom->action != 0){
 							cout << "i made an action in Terminal" << endl;
-							// GPLAction(ptr->typeNode.atom->action);
+							GPLAction(ptr->typeNode.atom->action, ptr);
 						}
 						cout << "Terminal code == LUcode" << endl;
 						do{
@@ -632,7 +640,7 @@ bool analyzerGPL(node* ptr, map<string,node*> forest){
 					if (analyzerGPL(forest[ptr->typeNode.atom->code], forest)){
 						if (ptr->typeNode.atom->action != 0){
 							cout << "i made an action in NonTerminal" << endl;
-							// GPLAction(ptr->typeNode.atom->action);
+							GPLAction(ptr->typeNode.atom->action, ptr);
 						}
 						return true;
 					}else{
@@ -646,9 +654,214 @@ bool analyzerGPL(node* ptr, map<string,node*> forest){
 	return false;
 }
 
-void GPLAction(int action){
+void GPLAction(int action, node* ptr){
+
+	int i;
 
 
+	switch(action){
+
+		// Déclaration d'un identificateur
+		case 1:
+			indexIdentPileX.insert(pair<string, int>(luProgram->chaine, pilex.size()));
+			pilex.push_back(-9999);
+		break;
+
+		// Donner une valeur à un identificateur
+		case 2:
+			pilex.push_back(stoi(valeurEntier));
+			valeurEntier = "";
+		break;
+
+		// Charger une adresse LDA + i
+		case 3:			
+			i = indexIdentPileX[luProgram->chaine];
+			p_code.push_back(LDA);
+			p_code.push_back(i);
+		break;
+
+		// Charger une valeur LDV + i
+		case 4:
+			i = indexIdentPileX[luProgram->chaine];
+			p_code.push_back(LDV);
+			p_code.push_back(i);
+		break;
+
+		// Charger une constante LDC + i
+		case 5:
+			i = indexIdentPileX[luProgram->chaine];
+			p_code.push_back(LDV);
+			p_code.push_back(i);
+		break;
+
+		// identifier opérateur mathématique (ADD,SUB ect)
+		case 6:
+			if (valeurOperateurMath == "+") {
+                p_code.push_back(ADD);
+            } else if (valeurOperateurMath == "-") {
+                p_code.push_back(SUB);
+            } else if (valeurOperateurMath == "++") {
+                p_code.push_back(INC);
+            } else if (valeurOperateurMath == "--") {
+                p_code.push_back(DEC);
+            } else if (valeurOperateurMath == "*") {
+                p_code.push_back(MULT);
+            } else if (valeurOperateurMath == "/") {
+                p_code.push_back(DIV);
+            } else if (valeurOperateurMath == "!") {
+                p_code.push_back(NEG);
+            }
+		break;
+
+		// Lire une valeur
+		case 7:
+			p_code.push_back(RDLN);
+			p_code.push_back(AFF);
+		break;
+
+		// Ecrire une valeur
+		case 8:
+			p_code.push_back(WRTLN);
+		break;
+
+		// Charger un ou (OR) 
+        case 9:
+            p_code.push_back(OR);
+            break;
+        // Charger un et (AND) 
+
+        case 10:
+            p_code.push_back(AND);
+            break;
+
+        // Charger un negatif (NOT) 
+        case 11:
+            p_code.push_back(NOT);
+            break;
+            
+        // Dépiler l'opérateur (OR, AND, NEG) (31)
+        case 12:
+            //std::cout << "Dépiler l'opérateur (OR, AND, NEG)" << '\n';
+            p_code.pop_back();
+            break;
+
+        // Identifier l'operateur relationnel (SUP, SUPE, INF...) (34)
+        case 13:
+            //std::cout << "Identifier l'operateur relationnel (SUP, SUPE, INF...) : " << valeurOperateur << '\n';
+            if (valeurOperateur == "==") {
+                p_code.push_back(EG);
+            } else if (valeurOperateur == ">") {
+                p_code.push_back(SUP);
+            } else if (valeurOperateur == ">=") {
+                p_code.push_back(SUPE);
+            } else if (valeurOperateur == "<") {
+                p_code.push_back(INF);
+            } else if (valeurOperateur == "<=") {
+                p_code.push_back(INFE);
+            } else if (valeurOperateur == "!=") {
+                p_code.push_back(DIFF);
+            }
+            break;
+
+        // Premiere partie d'un JIF (IF) (chargé le JIF + l'adresse laissée vide pour jump si faux) (20)
+        case 14:
+            p_code.push_back(JIF);
+            p_code.push_back(-9999);
+            pilex.push_back(p_code.size()-1);
+            break;
+
+        // Deuxieme partie d'un JIF (ELSE) (mettre l'adresse du saut) (21)
+        case 15:
+            //std::cout << "Deuxieme partie d'un JIF (ELSE) pilex : " << pilex[pilex.size()-1] << '\n';
+            p_code[pilex[pilex.size()-2]] = p_code.size();
+            break;
+
+        // Troisieme partie d'un JIF (THEN) (mettre un JMP pour sauté après le else) (22)
+        case 16:
+            //std::cout << "Troisieme partie d'un JIF (THEN)" << '\n';
+            p_code.push_back(JMP);
+            p_code.push_back(-9999);
+            pilex.push_back(p_code.size()-1);
+            break;
+
+        // Quatrième partie d'un JIF (ENDIF) (remplir l'adresse du JMP pour le THEN) (23)
+        case 17:
+            //std::cout << "Quatrième partie d'un JIF (ENDIF) " << pilex.back() << '\n';
+            p_code[pilex.back()] = p_code.size();
+            pilex.pop_back();
+            pilex.pop_back();
+            break;
+
+        // Pour le while, JMP pour revenir au début du while (24)
+        case 18:
+            //std::cout << "Pour le while, JMP pour revenir au début du while" << '\n';
+            p_code.push_back(JMP);
+            p_code[pilex.back()] = p_code.size()+1;
+            p_code.push_back(pilex.back());;
+            pilex.pop_back();
+            break;
+
+        // Chargé une affectation : AFF
+        case 19:
+            //cout << "Chargé une affectation : AFF" << endl;
+            p_code.push_back(AFF);
+            break;
+
+        // STOP (Pas sur que ce soit néceassaire) (28)
+        case 20:
+            //cout << "STOP" << endl;
+            p_code.push_back(STOP);
+            break;
+
+        // Permet de recuperer la valeur de l'entier
+        case 21:
+            //valeurEntier += op->getCode();
+            valeurEntier += ptr->typeNode.atom->code;
+            break;
+
+        case 22:
+            //valeurOperateur = op->getCode();
+        	valeurOperateur = ptr->typeNode.atom->code;
+            break;
+
+        case 23:
+            //valeurOperateurMath = op->getCode();
+        	valeurOperateurMath = ptr->typeNode.atom->code;
+            break;
+
+        // Chargé l'adresse de JMP de fin pour le While
+        case 24:
+            pilex.push_back(p_code.size());
+            break;
+
+        // Chargé le JIF avec un case vide pour connaitre au jump si faux (pour While)
+        case 25:
+            //std::cout << "Premiere partie d'un JIF (While)" << '\n';
+            p_code.push_back(JIF);
+            p_code.push_back(-9999);
+            break;
+        default:
+            cout << "Inconnu" << endl;
+            break;
+    }
+
+
+}
+
+
+void printPCODE(){
+	int i;
+	for (i = 0; i < p_code.size() ; i++) {
+		cout << p_code[i] << endl;
+	}
+}
+
+vector<int> getPCODE(){
+	return p_code;
+}
+
+vector<int> getPILEX(){
+	return pilex;
 }
 
 bool isIdentificator(string unit){

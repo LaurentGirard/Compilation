@@ -21,6 +21,8 @@ int main(){
 	cout << "Result : " << analyzer << endl;
 	cout << "------------------------------------" << endl;
 
+	printPCODE();
+
 	/* Exemple du cours pour le petit programme SOMME */
 
 	// cout << "Exemple d'interprétation du pcode avec le programme Somme vu en cours." << endl;
@@ -30,8 +32,8 @@ int main(){
 	// vector<int> pile1 (pcodePile, pcodePile + sizeof(pcodePile) / sizeof(int));
 	// vector<int> pile2 (pileXpile, pileXpile + sizeof(pileXpile) / sizeof(int));
 
-	// initPile(pile1,pile2);
-	// execPcode();
+	initPile(getPCODE(),getPILEX());
+	execPcode();
 	
 
 	// cout << "Lexical units Terminal" << endl;

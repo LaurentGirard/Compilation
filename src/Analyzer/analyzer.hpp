@@ -18,6 +18,7 @@ void printLexicalUnit(lexical_unit* lu);
 void printLexicalUnits(string lexicalType);
 void printLexicalErrors();
 
+
 bool callAnalyzer(map<string,node*> &forest);
 bool analyzer(node* ptr, map<string,node*> &forest);
 void G0Action(int action, map<string,node*> &forest);
@@ -30,10 +31,14 @@ lexical_unit* analyseUnitGPL(string unit);
 lexical_unit* scannerGPL();
 
 void printLexicalErrorsGPL();
+void printPCODE();
 
 bool callAnalyzerGPL(map<string,node*> forest);
 bool analyzerGPL(node* ptr, map<string,node*> forest);
-void GPLAction(int action);
+void GPLAction(int action, node* ptr);
 bool isIdentificator(string unit);
+
+vector<int> getPCODE();
+vector<int> getPILEX();
 
 #endif // __ANALYZER_HPP__
